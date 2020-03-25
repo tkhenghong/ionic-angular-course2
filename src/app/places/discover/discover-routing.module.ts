@@ -8,10 +8,10 @@ const routes: Routes = [
     path: '',
     component: DiscoverPage
   },
-  // {
-  //   path: 'place-detail',
-  //   loadChildren: () => import('./place-detail/place-detail.module').then( m => m.PlaceDetailPageModule)
-  // }
+  {
+    path: 'place-detail',
+    loadChildren: () => import('./place-detail/place-detail.module').then( m => m.PlaceDetailPageModule)
+  }
 ];
 
 @NgModule({
