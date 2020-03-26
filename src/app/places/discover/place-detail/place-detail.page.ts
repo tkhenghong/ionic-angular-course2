@@ -1,25 +1,23 @@
-import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { NavController } from '@ionic/angular';
+import { Component, OnInit } from "@angular/core";
+import { Router } from "@angular/router";
+import { NavController } from "@ionic/angular";
 
 @Component({
-  selector: 'app-place-detail',
-  templateUrl: './place-detail.page.html',
-  styleUrls: ['./place-detail.page.scss'],
+  selector: "app-place-detail",
+  templateUrl: "./place-detail.page.html",
+  styleUrls: ["./place-detail.page.scss"]
 })
 export class PlaceDetailPage implements OnInit {
-
   constructor(
     // Ways to navigate in Ionic application
-      // 1st method: Router method
-      private router: Router,
+    // 1st method: Router method (By Angular)
+    private router: Router,
 
-      // 2nd method: NavController
-      private navCtrl: NavController,
-  ) { }
+    // 2nd method: NavController (By Ionic)
+    private navCtrl: NavController
+  ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   onBookPlace() {
     // 1st method: Router method
@@ -27,10 +25,9 @@ export class PlaceDetailPage implements OnInit {
     // this.router.navigateByUrl('/places/tabs/discover');
 
     // 2nd method: NavController (url in array form also can)
-    this.navCtrl.navigateBack('/places/tabs/discover');
+    this.navCtrl.navigateBack("/places/discover");
 
     // If you can guarantee there's always a page that you can go back, then use it. Otherwise, better use navigateBack() method
     // this.navCtrl.pop();
   }
-
 }
