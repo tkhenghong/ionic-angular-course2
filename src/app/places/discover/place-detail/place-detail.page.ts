@@ -22,7 +22,7 @@ export class PlaceDetailPage implements OnInit {
   onBookPlace() {
     // 1st method: Router method
     // But it plays wrong animation (plays forward)
-    // this.router.navigateByUrl('/places/tabs/discover');
+    // this.router.navigateByUrl('/places/discover');
 
     // 2nd method: NavController (url in array form also can)
     this.navCtrl.navigateBack("/places/discover");
