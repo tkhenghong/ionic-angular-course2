@@ -1,4 +1,40 @@
 <ion-app>
+  <!--Put your side drawer here-->
+  <ion-menu side="start" menuId="first" contentId="main">
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>
+          PairBnB
+        </ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <!--You can add button attribute to make it like button in this menu list-->
+        <!--When you click these buttons, it will go to that page, but the button will not close itself-->
+        <!--1st method: use NavController to go to that page, then use the MenuController to close the menu-->
+        <!--2nd method: Wrap these ion-item with ion-menu-toggle-->
+        <ion-menu-toggle>
+          <ion-item lines="none" routerLink="/places/discover" button>
+            <ion-icon name="business" slot="start"></ion-icon>
+            <ion-label>Discover Places</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+          <ion-item lines="none" routerLink="/bookings" button>
+            <ion-icon name="checkbox-outline" slot="start"></ion-icon>
+            <ion-label>Your Bookings</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+        <ion-menu-toggle>
+          <ion-item lines="none" (click)="onLogout()" button>
+            <ion-icon name="exit" slot="start"></ion-icon>
+            <ion-label>Logout</ion-label>
+          </ion-item>
+        </ion-menu-toggle>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
   <!--  Don't use <router-outlet> which is normal angular tag, because it will not render the Ionic very correctly-->
-  <ion-router-outlet></ion-router-outlet>
+  <ion-router-outlet id="main"></ion-router-outlet>
 </ion-app>
