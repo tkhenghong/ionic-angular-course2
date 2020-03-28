@@ -19,18 +19,47 @@
     <ion-row>
       <ion-col size="12" size-sm="8" offset-sm="2">
         <ion-list>
-          <ion-item
-            *ngFor="let place of loadedPlaces"
-            [routerLink]="['/', 'places', 'offers', 'offer-bookings', place.id]"
-          >
-            <ion-thumbnail slot="start">
-              <ion-img [src]="place.imageUrl"></ion-img>
-            </ion-thumbnail>
-            <ion-label>
-              <h2>{{place.title}}</h2>
-              <p>{{place.description}}</p>
-            </ion-label>
-          </ion-item>
+          <!--Slide left to see options? Wrap ion-item-sliding around your ion-item-->
+          <!--https://ionicframework.com/docs/api/item-sliding-->
+          <!--Add #***** to your HTML element, for example #slidingItem, to bring the whole Element into the function(HTML feature)-->
+          <ion-item-sliding *ngFor="let place of loadedPlaces" #slidingItem>
+            <ion-item
+              [routerLink]="['/', 'places', 'offers', 'offer-bookings', place.id]"
+            >
+              <ion-thumbnail slot="start">
+                <ion-img [src]="place.imageUrl"></ion-img>
+              </ion-thumbnail>
+              <ion-label>
+                <h2>{{place.title}}</h2>
+                <p>{{place.description}}</p>
+              </ion-label>
+            </ion-item>
+            <!--Put your option buttons within ion-item-sliding-->
+            <!--side start or end to show the options by swiping left or right on the ion-item-->
+            <!--PROBLEM: If there are 2 sets of ion-item-options, with same color options(Not the primary color),
+            when you look at the right one, the button color gets inconsistent(primary and secondary color showing at the same time).-->
+            <ion-item-options side="end">
+              <!--You need to use (click) listener to navigate to other page, because if use routerLink, the sliding won't close itself when come back-->
+              <ion-item-option
+                color="secondary"
+                (click)="onEdit(place.id, slidingItem)"
+              >
+                <ion-icon name="create" slot="top"></ion-icon>
+                Edit
+              </ion-item-option>
+            </ion-item-options>
+            <!-- <ion-item-options side="end">
+              <ion-item-option>
+                <ion-item-option
+                  color="secondary"
+                  (click)="onEdit(place.id, slidingItem)"
+                >
+                  <ion-icon name="create" slot="top"></ion-icon>
+                  Edit
+                </ion-item-option>
+              </ion-item-option>
+            </ion-item-options> -->
+          </ion-item-sliding>
         </ion-list>
       </ion-col>
     </ion-row>
