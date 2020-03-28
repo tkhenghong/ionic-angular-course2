@@ -10,6 +10,7 @@ import { MenuController } from "@ionic/angular";
 })
 export class DiscoverPage implements OnInit {
   loadedPlaces: Place[];
+  listedLoadedPlaces: Place[];
   constructor(
     private placesService: PlacesService,
     private menuController: MenuController
@@ -17,6 +18,7 @@ export class DiscoverPage implements OnInit {
 
   ngOnInit() {
     this.loadedPlaces = this.placesService.places;
+    this.listedLoadedPlaces = this.loadedPlaces.slice(1);
   }
 
   // Open, close or toggle the side menu programmatically using MenuController.

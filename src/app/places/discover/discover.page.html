@@ -28,7 +28,11 @@
           <ion-img [src]="loadedPlaces[0].imageUrl"></ion-img>
           <ion-card-content>
             <!--Example use of ionic-label. You also can use ion-text. You can do coloring on it. Use ion-text if you're doing basic coloring only.-->
-            <p><ion-text color="danger">{{loadedPlaces[0].description}}</ion-text></p>
+            <p>
+              <ion-text color="danger"
+                >{{loadedPlaces[0].description}}</ion-text
+              >
+            </p>
           </ion-card-content>
           <!-- <div text-right padding></div> Old Ionic 4 stuff-->
           <div class="ion-text-center">
@@ -51,12 +55,23 @@
     </ion-row>
     <ion-row>
       <ion-col size="12" size-sm="8" offset-sm="2" class="ion-text-center">
-        <ion-list>
+        <!--ion-virtual-scroll: An item that scroll through unlimited list of items without lagging down the app performance.
+            In traditional for loop, all items are rendered no matter you're viewing them or not.
+            But ion-virtual-scroll only renders the ion-item that is in your screen view only.-->
+        <!--You CANNOT put any splice(), filter(), split() method in the [items] attribute,
+               it will cause the whole Ionic app hangs.-->
+        <!--approxItemHeight tells ion-virtual-scroll the height of the ion-item which helps 
+                it to determine and prepare how far you will scroll down and how many item you will have on screen.
+              Improves performance.-->
+        <ion-virtual-scroll
+          [items]="listedLoadedPlaces"
+          approxItemHeight="70px"
+        >
           <!--detail can tell Ionic to make arrow pointer that indicates this item can be clicked.-->
           <ion-item
-            *ngFor="let place of loadedPlaces.slice(1)"
             [routerLink]="['/', 'places', 'discover', 'place-detail', place.id]"
             detail
+            *virtualItem="let place"
           >
             <ion-thumbnail slot="start">
               <ion-img [src]="place.imageUrl"></ion-img>
@@ -66,7 +81,7 @@
               <p>{{place.description}}</p>
             </ion-label>
           </ion-item>
-        </ion-list>
+        </ion-virtual-scroll>
       </ion-col>
     </ion-row>
   </ion-grid>
