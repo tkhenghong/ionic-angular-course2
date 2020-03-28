@@ -16,7 +16,7 @@ const routes: Routes = [
   {
     path: 'places',
     loadChildren: () => import('./places/places.module').then( m => m.PlacesPageModule),
-    canLoad: [AuthGuard] // Attach AuthGuard in these modules
+    canLoad: [AuthGuard] // Attach AuthGuard in these modules (Problem: Unable to access the internals after applying the AuthGuard, see the discover.page.html file)
   },
 ];
 

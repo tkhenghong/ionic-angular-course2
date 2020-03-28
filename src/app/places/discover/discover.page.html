@@ -53,7 +53,7 @@
           <!--detail can tell Ionic to make arrow pointer that indicates this item can be clicked.-->
           <ion-item
             *ngFor="let place of loadedPlaces.slice(1)"
-            [routerLink]="['/', 'places', 'discover', 'placeDetail', place.id]"
+            [routerLink]="['/', 'places', 'discover', 'place-detail', place.id]"
             detail
           >
             <ion-thumbnail slot="start">
