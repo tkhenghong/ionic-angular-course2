@@ -5,8 +5,10 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <ion-grid fixed>
-    <ion-row>
+  <!--Make the login form in the middle of the screen-->
+  <!--https://forum.ionicframework.com/t/vertical-and-horizontal-center/83204-->
+  <ion-grid fixed style="height: 100%;">
+    <ion-row class="ion-align-items-center ion-justify-content-center" style="margin-top: 60%">
       <ion-col>
         <ion-list>
           <!--You may use ion-item directly without ion-list-->
@@ -14,7 +16,13 @@
             <!--This configuration of Email field will give standard animation effect,
               when the user clicked on the Email field in this page.-->
             <ion-label position="floating">Email: </ion-label>
-            <ion-input></ion-input>
+            <ion-input inputmode="email" clearInput autofocus autocomplete required></ion-input>
+          </ion-item>
+          <ion-item>
+            <!--This configuration of Email field will give standard animation effect,
+              when the user clicked on the Email field in this page.-->
+            <ion-label position="floating">Password: </ion-label>
+            <ion-input type="password" clearInput autocomplete required></ion-input>
           </ion-item>
         </ion-list>
       </ion-col>
