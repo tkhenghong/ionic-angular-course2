@@ -1,6 +1,7 @@
 import { Component, OnInit } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { Router } from "@angular/router";
+import { LoadingController } from "@ionic/angular";
 
 @Component({
   selector: "app-auth",
@@ -9,12 +10,22 @@ import { Router } from "@angular/router";
 })
 export class AuthPage implements OnInit {
   isLoading: boolean = false;
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private loadingController: LoadingController
+  ) {}
 
   ngOnInit() {}
 
-  onLogin() {
+  async onLogin() {
     this.isLoading = true;
+    // Use LoadingController
+    const loadingElement = await this.loadingController.create({
+      keyboardClose: true,
+      message: "Logging in..."
+    });
+    loadingElement.present();
     this.authService.login(); // Authenticate
     // this.router.navigateByUrl("/places/discover"); // Go to main page (Commented due to still can go back to Login page)
 
@@ -25,6 +36,7 @@ export class AuthPage implements OnInit {
     // Put setTimeout to fake the app is communicating with the server.
     setTimeout(() => {
       this.isLoading = false;
+      loadingElement.dismiss();
       this.router.navigate(["/", "places", "discover"], { replaceUrl: true }); // Set the Discover page as the first page in the stack navigation.
     }, 1500);
   }
