@@ -21,8 +21,9 @@
     </ion-row>
     <ion-row>
       <ion-col>
+        <!--View official documentation on spinners: https://ionicframework.com/docs/api/spinner-->
         <ion-button expand="block" color="primary" (click)="onLogin()"
-          >Login
+          >Login&nbsp;&nbsp;&nbsp;<ion-spinner color="secondary" *ngIf="isLoading"></ion-spinner>
         </ion-button>
       </ion-col>
     </ion-row>
