@@ -11,6 +11,13 @@
 </ion-header>
 
 <ion-content class="ion-padding">
+  <!--Put a group of buttons together, only one active at the time.-->
+  <!--use ionChange Ionic value listener to get the value-->
+  <ion-segment (ionChange)="onFilterUpdate($event)">
+    <!--value is not visible in the UI, but it will be useful when passed into the code to figure out which button in the segment is pressed.-->
+    <ion-segment-button value="all">All Places</ion-segment-button>
+    <ion-segment-button value="bookable">Bookable Places</ion-segment-button>
+  </ion-segment>
   <ion-grid>
     <ion-row>
       <!--Takes the whole row (size 12), set size to 8 when the window is middle sized, and make space the horizontal sides of the ion-col-->
@@ -29,7 +36,7 @@
           <ion-card-content>
             <!--Example use of ionic-label. You also can use ion-text. You can do coloring on it. Use ion-text if you're doing basic coloring only.-->
             <p>
-              <ion-text color="danger"
+              <ion-text color="primary"
                 >{{loadedPlaces[0].description}}</ion-text
               >
             </p>

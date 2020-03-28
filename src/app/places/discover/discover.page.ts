@@ -27,4 +27,9 @@ export class DiscoverPage implements OnInit {
   // this.menuController.close('first');
   // this.menuController.toggle('first');
   // }
+
+  // CustomEvent is not in Ionic 5. (Not in Official documentation)
+  onFilterUpdate(event: any) {
+    console.log('discover.page.ts event.detail: ', event.detail);
+  }
 }
