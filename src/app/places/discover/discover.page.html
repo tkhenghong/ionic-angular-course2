@@ -27,7 +27,8 @@
           </ion-card-header>
           <ion-img [src]="loadedPlaces[0].imageUrl"></ion-img>
           <ion-card-content>
-            <p>{{loadedPlaces[0].description}}</p>
+            <!--Example use of ionic-label. You also can use ion-text. You can do coloring on it. Use ion-text if you're doing basic coloring only.-->
+            <p><ion-text color="danger">{{loadedPlaces[0].description}}</ion-text></p>
           </ion-card-content>
           <!-- <div text-right padding></div> Old Ionic 4 stuff-->
           <div class="ion-text-center">
