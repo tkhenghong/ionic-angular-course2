@@ -13,19 +13,10 @@
   <!--See latest implementation of Ionic using this link: https://ionicframework.com/docs/layout/grid-->
   <ion-grid>
     <ion-row>
-      <ion-col>Row 1 Col 1</ion-col>
-      <ion-col>Row 1 Col 2</ion-col>
-      <ion-col>Row 1 Col 3</ion-col>
-      <ion-col>Row 1 Col 4</ion-col>
-      <ion-col>Row 1 Col 5</ion-col>
-      <ion-col>Row 1 Col 6</ion-col>
-      <ion-col>Row 1 Col 7</ion-col>
-      <ion-col>Row 1 Col 8</ion-col>
-      <ion-col>Row 1 Col 9</ion-col>
-      <ion-col>Row 1 Col 10</ion-col>
-      <ion-col>Row 1 Col 11</ion-col>
-      <ion-col>Row 1 Col 12</ion-col>
-      <ion-col>Row 1 Col 13</ion-col>
+      <!--Add size attribute to tell this column should contain how much spaces out of 12-->
+      <!--To add spacing between the columns, you just need to add offset. You can offset both, or only left, or only right. -->
+      <ion-col size="4" offset="2">Row 1 Col 1</ion-col>
+      <ion-col size="4">Row 1 Col 2</ion-col>
       <!--Still will fit into the row, but not optimized anymore. So remember to put 12 columns maximum in 1 row-->
     </ion-row>
   </ion-grid>
