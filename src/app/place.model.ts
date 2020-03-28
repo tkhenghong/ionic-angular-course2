@@ -10,10 +10,10 @@ export class Place {
 }
 
 // Our way to create Place object
-export interface Place2 {
-  id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  price: number;
-}
+// export interface Place2 {
+//   id: string;
+//   title: string;
+//   description: string;
+//   imageUrl: string;
+//   price: number;
+// }

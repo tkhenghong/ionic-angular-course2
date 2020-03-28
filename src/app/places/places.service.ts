@@ -9,7 +9,7 @@ export class PlacesService {
     new Place(
       "p1",
       "Manhattan Mansion",
-      "In the heart of New York City",
+      "In the heart of New York City.",
       "https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200",
       149.99
     ),
