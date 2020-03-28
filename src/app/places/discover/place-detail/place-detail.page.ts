@@ -3,7 +3,9 @@ import { Router, ActivatedRoute } from "@angular/router";
 import {
   NavController,
   ModalController,
-  AlertController
+  AlertController,
+  ActionSheetController,
+  ToastController
 } from "@ionic/angular";
 import { CreateBookingComponent } from "src/app/bookings/create-booking/create-booking.component";
 import { Place } from "src/app/place.model";
@@ -26,7 +28,9 @@ export class PlaceDetailPage implements OnInit {
     private modalController: ModalController,
     private placeService: PlacesService,
     private route: ActivatedRoute,
-    public alertController: AlertController
+    private alertController: AlertController,
+    private actionSheetController: ActionSheetController,
+    private toastController: ToastController,
   ) {}
 
   ngOnInit() {
@@ -40,7 +44,7 @@ export class PlaceDetailPage implements OnInit {
     });
   }
 
-  onBookPlace() {
+  async onBookPlace() {
     // 1st method: Router method
     // But it plays wrong animation (plays forward)
     // this.router.navigateByUrl('/places/discover');
@@ -51,6 +55,37 @@ export class PlaceDetailPage implements OnInit {
     // If you can guarantee there's always a page that you can go back, then use it. Otherwise, better use navigateBack() method
     // this.navCtrl.pop();
 
+    // ActionSheetController
+    // https://ionicframework.com/docs/api/action-sheet
+    const actionSheetElement = await this.actionSheetController.create({
+      header: "Choose an action: ",
+      buttons: [
+        {
+          text: "Select Date",
+          handler: () => {
+            this.openBookingModal("select");
+          }
+        },
+        {
+          text: "Random Date",
+          handler: () => {
+            this.openBookingModal("random");
+          }
+        },
+        {
+          text: "Cancel",
+          role: "cancel"
+          // role: 'destructive' // This is used when the user wants to delete something, and you show this button as red.
+        }
+      ]
+    });
+
+    actionSheetElement.present();
+  }
+
+  // This type of argument got validation check that the argument must be either 'select' value or 'random' value only.
+  openBookingModal(mode: "select" | "random") {
+    console.log("place-detail.page.ts mode: ", mode);
     // You need to create a modal with Putting a Component class in it.
     this.modalController
       .create({
@@ -74,16 +109,46 @@ export class PlaceDetailPage implements OnInit {
   }
 
   async showBookedMessage() {
-    const alert = await this.alertController.create({
-      header: "Booked!",
+    // const alert = await this.alertController.create({
+    //   header: "Booked!",
+    //   buttons: [
+    //     {
+    //       text: "OK",
+    //       role: "cancel"
+    //     }
+    //   ]
+    // });
+
+    // await alert.present();
+
+    // ToastController
+    // https://ionicframework.com/docs/api/toast
+    const toast = await this.toastController.create({
+      header: 'Booked',
+      message: 'Click to Close',
+      // position: 'top', // Problem: It's looking horrible in iOS.
       buttons: [
         {
-          text: "OK",
-          role: "cancel"
+          side: 'end',
+          text: "Undo",
+          icon: 'arrow-undo-outline',
+          handler: () => {
+            this.showUndoMessage();
+          }
         }
       ]
     });
+    await toast.present();
+  }
 
+  async showUndoMessage() {
+    const alert = await this.alertController.create({
+      header: 'Undo successful.',
+      buttons: [{
+        text: 'OK',
+        role: 'cancel'
+      }]
+    });
     await alert.present();
   }
 }
