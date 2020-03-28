@@ -12,11 +12,21 @@
   <!--ion-grid auto leaves a little padding as default, you may remove it by adding class="ion-no-padding"/-->
   <!--See latest implementation of Ionic using this link: https://ionicframework.com/docs/layout/grid-->
   <ion-grid>
-    <ion-row>
+    <!--If any column is taller than other columns, all columns will be stretched together. If you want all columns is aligned up or down,-->
+    <!--use class ion-align-items-start, use ion-align-items-end, ion-align-items-center-->
+    <!--Push all the columns to the left/right by using ion-justify-content-start, ion-justify-content-end, ion-justify-content-center (Please remember to remove the offset attributes in ion-col)-->
+    <ion-row class="ion-align-items-center ion-justify-content-start">
       <!--Add size attribute to tell this column should contain how much spaces out of 12-->
       <!--To add spacing between the columns, you just need to add offset. You can offset both, or only left, or only right. -->
-      <ion-col size="4" offset="2">Row 1 Col 1</ion-col>
-      <ion-col size="4">Row 1 Col 2</ion-col>
+      <ion-col size="4">Row 1 Col 1</ion-col>
+      <ion-col size="4">
+        <ion-card>
+          <ion-card-content>
+            <h1>The Column</h1>
+            <p>Row 1 Col 2</p>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
       <!--Still will fit into the row, but not optimized anymore. So remember to put 12 columns maximum in 1 row-->
     </ion-row>
   </ion-grid>
