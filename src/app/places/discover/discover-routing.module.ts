@@ -2,7 +2,6 @@ import { NgModule } from "@angular/core";
 import { Routes, RouterModule } from "@angular/router";
 
 import { DiscoverPage } from "./discover.page";
-import { AuthGuard } from 'src/app/auth/auth.guard';
 
 const routes: Routes = [
   {
