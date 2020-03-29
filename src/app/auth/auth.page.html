@@ -16,6 +16,8 @@
         <ion-col size-sm="6" offset-sm="3">
           <ion-list>
             <!--For each Angular template driven form, you must add ngModel, name and your *name* attribute in every single field.-->
+            <!--You also can give some validations like minlength, maxlength and so on.-->
+            <!--You can add your own attribute in there like #emailCtrl="ngModel", so you can access the Email Form Control-->
             <!--You may use ion-item directly without ion-list-->
             <ion-item>
               <!--This configuration of Email field will give standard animation effect,
@@ -30,7 +32,13 @@
                 ngModel
                 name="email"
                 email
+                #emailCtrl="ngModel"
               ></ion-input>
+            </ion-item>
+            <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none">
+              <!--After self assigned your own attribute, you can use that to read the form control, show the correct error message
+                 based on the basic given characteristics of the form validation like pristine, touched, dirty, required and pattern.-->
+                 <small>Should be a valid email address.</small>
             </ion-item>
             <ion-item>
               <!--This configuration of Email field will give standard animation effect,
@@ -44,7 +52,14 @@
                 ngModel
                 name="password"
                 password
+                minlength="6"
+                #passwordCtrl="ngModel"
               ></ion-input>
+            </ion-item>
+            <ion-item *ngIf="!passwordCtrl.valid && passwordCtrl.touched" lines="none">
+              <!--After self assigned your own attribute, you can use that to read the form control, show the correct error message
+                 based on the basic given characteristics of the form validation like pristine, touched, dirty, required and pattern.-->
+                 <small>Should be at least 6 characters long.</small>
             </ion-item>
           </ion-list>
         </ion-col>
@@ -67,6 +82,7 @@
             fill="outline"
             (click)="onLogin()"
             type="submit"
+            [disabled]="!f.valid"
           >
             Login
           </ion-button>

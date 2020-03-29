@@ -47,3 +47,9 @@ ion-button { // <--- This is completely acceptable in Ionic world
     // --color: white;
     // --background: white;
 }
+
+// Make the ion-label Color becomes Red(referenced from --ion-color-danger set in variables.scss file),
+// when the form element's value is invalid/touched.
+.ion-invalid .ion-touched ion-label {
+    --color: var(--ion-color-danger);
+}
