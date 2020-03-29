@@ -4,6 +4,11 @@
       <ion-back-button defaultHref="/places/offers"></ion-back-button>
     </ion-buttons>
     <ion-title>New Offer</ion-title>
+    <ion-buttons slot="primary">
+      <ion-button (click)="onCreateOffer()">
+        <ion-icon name="checkmark" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 <ion-content>
@@ -32,43 +37,63 @@
         </ion-item>
       </ion-col>
     </ion-row>
+    <ion-row>
+      <ion-col size-sm="3" offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Available From: </ion-label>
+          <ion-datetime
+            [min]="availableFrom"
+            [max]="availableTo"
+          ></ion-datetime>
+        </ion-item>
+      </ion-col>
+      <ion-col offset-sm="3">
+        <ion-item>
+          <ion-label position="floating">Available To: </ion-label>
+          <ion-datetime
+            [min]="availableFrom"
+            [max]="availableTo"
+          ></ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 </ion-content>
 
 <!--ARCHIVED-->
 <!--Let's use this as a page to play with ion-grid (important thing to size your components automatically)-->
 <!-- <ion-content> -->
-  <!--When you're playing with ion-grid, you also must have a ion-row, or else ion-col auto size will not work****-->
-  <!--ion-grid auto leaves a little padding as default, you may remove it by adding class="ion-no-padding"/-->
-  <!--See latest implementation of Ionic using this link: https://ionicframework.com/docs/layout/grid-->
-  <!--By default the column that doesn't mentioned anything will takes the full width of the screen.-->
-  <!--So you can add attribute fixed to make sure all columns will take a more spaces besides the row's total width. 
+<!--When you're playing with ion-grid, you also must have a ion-row, or else ion-col auto size will not work****-->
+<!--ion-grid auto leaves a little padding as default, you may remove it by adding class="ion-no-padding"/-->
+<!--See latest implementation of Ionic using this link: https://ionicframework.com/docs/layout/grid-->
+<!--By default the column that doesn't mentioned anything will takes the full width of the screen.-->
+<!--So you can add attribute fixed to make sure all columns will take a more spaces besides the row's total width. 
     All column's width will not auto expand 100% and stay that width if the column think there's enough spaces already for it's content.
     Play with the fixed attribute and see the difference by keep expands and shrinks the browser window.
   -->
-  <!-- <ion-grid fixed> -->
-    <!--If any column is taller than other columns, all columns will be stretched together. If you want all columns is aligned up or down,-->
-    <!--use class ion-align-items-start, use ion-align-items-end, ion-align-items-center-->
-    <!--Push all the columns to the left/right by using ion-justify-content-start, ion-justify-content-end, ion-justify-content-center (Please remember to remove the offset attributes in ion-col)-->
-    <!-- <ion-row class="ion-align-items-center ion-justify-content-center"> -->
-      <!--Add size attribute to tell this column should contain how much spaces out of 12-->
-      <!--To add spacing between the columns, you just need to add offset. You can offset both, or only left, or only right. -->
-      <!-- <ion-col size="5" size-sm="4" size-md="2" offset-sm="2" offset-md="2" -->
-        <!-- >Row 1 Col 1</ion-col -->
-      <!-- > -->
-      <!-- <ion-col size="1" size-sm="4" size-md="3"> -->
-        <!-- <ion-card> -->
-          <!-- <ion-card-content> -->
-            <!-- <h1>The Column</h1> -->
-            <!-- <p>Row 1 Col 2</p> -->
-          <!-- </ion-card-content> -->
-        <!-- </ion-card> -->
-      <!-- </ion-col> -->
-      <!--If you put 13 ion-cols in the ion-grid, it will still fit into 1 row, but not optimized anymore. So remember to put 12 columns maximum in 1 row.-->
-    <!-- </ion-row> -->
-    <!-- <ion-row> -->
-      <!-- <ion-col>Row 2 Col 1</ion-col> -->
-      <!-- <ion-col>Row 2 Col 2</ion-col> -->
-    <!-- </ion-row> -->
-  <!-- </ion-grid> -->
+<!-- <ion-grid fixed> -->
+<!--If any column is taller than other columns, all columns will be stretched together. If you want all columns is aligned up or down,-->
+<!--use class ion-align-items-start, use ion-align-items-end, ion-align-items-center-->
+<!--Push all the columns to the left/right by using ion-justify-content-start, ion-justify-content-end, ion-justify-content-center (Please remember to remove the offset attributes in ion-col)-->
+<!-- <ion-row class="ion-align-items-center ion-justify-content-center"> -->
+<!--Add size attribute to tell this column should contain how much spaces out of 12-->
+<!--To add spacing between the columns, you just need to add offset. You can offset both, or only left, or only right. -->
+<!-- <ion-col size="5" size-sm="4" size-md="2" offset-sm="2" offset-md="2" -->
+<!-- >Row 1 Col 1</ion-col -->
+<!-- > -->
+<!-- <ion-col size="1" size-sm="4" size-md="3"> -->
+<!-- <ion-card> -->
+<!-- <ion-card-content> -->
+<!-- <h1>The Column</h1> -->
+<!-- <p>Row 1 Col 2</p> -->
+<!-- </ion-card-content> -->
+<!-- </ion-card> -->
+<!-- </ion-col> -->
+<!--If you put 13 ion-cols in the ion-grid, it will still fit into 1 row, but not optimized anymore. So remember to put 12 columns maximum in 1 row.-->
+<!-- </ion-row> -->
+<!-- <ion-row> -->
+<!-- <ion-col>Row 2 Col 1</ion-col> -->
+<!-- <ion-col>Row 2 Col 2</ion-col> -->
+<!-- </ion-row> -->
+<!-- </ion-grid> -->
 <!-- </ion-content> -->
