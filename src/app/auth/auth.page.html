@@ -35,10 +35,13 @@
                 #emailCtrl="ngModel"
               ></ion-input>
             </ion-item>
-            <ion-item *ngIf="!emailCtrl.valid && emailCtrl.touched" lines="none">
+            <ion-item
+              *ngIf="!emailCtrl.valid && emailCtrl.touched"
+              lines="none"
+            >
               <!--After self assigned your own attribute, you can use that to read the form control, show the correct error message
                  based on the basic given characteristics of the form validation like pristine, touched, dirty, required and pattern.-->
-                 <small>Should be a valid email address.</small>
+              <small>Should be a valid email address.</small>
             </ion-item>
             <ion-item>
               <!--This configuration of Email field will give standard animation effect,
@@ -56,10 +59,13 @@
                 #passwordCtrl="ngModel"
               ></ion-input>
             </ion-item>
-            <ion-item *ngIf="!passwordCtrl.valid && passwordCtrl.touched" lines="none">
+            <ion-item
+              *ngIf="!passwordCtrl.valid && passwordCtrl.touched"
+              lines="none"
+            >
               <!--After self assigned your own attribute, you can use that to read the form control, show the correct error message
                  based on the basic given characteristics of the form validation like pristine, touched, dirty, required and pattern.-->
-                 <small>Should be at least 6 characters long.</small>
+              <small>Should be at least 6 characters long.</small>
             </ion-item>
           </ion-list>
         </ion-col>
@@ -68,7 +74,13 @@
         <ion-col size-md="6" offset-md="3">
           <!--Other buttons that wrapped by the form must write type="button"
             so the form won't execute when you click this button.-->
-          <ion-button color="primary" fill="clear" expand="full" type="button" (click)="onSwitchAuthMode()">
+          <ion-button
+            color="primary"
+            fill="clear"
+            expand="full"
+            type="button"
+            (click)="onSwitchAuthMode()"
+          >
             Switch to {{ isLogin ? 'Sign Up' : 'Login' }}
           </ion-button>
           <!--View official documentation on spinners: https://ionicframework.com/docs/api/spinner-->
