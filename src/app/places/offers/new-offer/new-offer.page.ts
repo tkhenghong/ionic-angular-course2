@@ -1,7 +1,6 @@
 import { Component, OnInit } from "@angular/core";
-import { Place } from "src/app/place.model";
-import { PlacesService } from "../../places.service";
 import * as moment from "moment";
+import { FormGroup, FormControl, Validators } from "@angular/forms";
 
 @Component({
   selector: "app-new-offer",
@@ -16,9 +15,36 @@ export class NewOfferPage implements OnInit {
     .add(1, "year")
     .format("YYYY-MM-DD")
     .toString();
+  form: FormGroup;
   constructor() {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    // FormGroup should be created during ngOnInit().
+    this.form = new FormGroup({
+      title: new FormControl(null, {
+        updateOn: "blur", // You can determine when the form control sends valueChanged event, by using updateOn.
+        validators: [
+          Validators.required
+        ]
+      }),
+      description: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.maxLength(180)]
+      }),
+      price: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required, Validators.min(1)]
+      }),
+      dateFrom: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required]
+      }),
+      dateTo: new FormControl(null, {
+        updateOn: 'blur',
+        validators: [Validators.required]
+      })
+    });
+  }
 
   onCreateOffer() {
     console.log("Creating offered place...");
