@@ -7,37 +7,57 @@
 <ion-content class="ion-padding">
   <!--Make the login form in the middle of the screen-->
   <!--https://forum.ionicframework.com/t/vertical-and-horizontal-center/83204-->
-  <ion-grid fixed style="height: 100%;">
-    <ion-row class="ion-align-items-center ion-justify-content-center" style="margin-top: 60%">
-      <ion-col>
+  <ion-grid>
+    <ion-row>
+      <ion-col size-sm="6" offset-sm="3">
         <ion-list>
           <!--You may use ion-item directly without ion-list-->
           <ion-item>
             <!--This configuration of Email field will give standard animation effect,
               when the user clicked on the Email field in this page.-->
             <ion-label position="floating">Email: </ion-label>
-            <ion-input inputmode="email" clearInput autofocus autocomplete required></ion-input>
+            <ion-input
+              inputmode="email"
+              clearInput
+              autofocus
+              autocomplete
+              required
+            ></ion-input>
           </ion-item>
           <ion-item>
             <!--This configuration of Email field will give standard animation effect,
               when the user clicked on the Email field in this page.-->
             <ion-label position="floating">Password: </ion-label>
-            <ion-input type="password" clearInput autocomplete required></ion-input>
+            <ion-input
+              type="password"
+              clearInput
+              autocomplete
+              required
+            ></ion-input>
           </ion-item>
         </ion-list>
       </ion-col>
     </ion-row>
     <ion-row>
-      <ion-col>
+      <ion-col size-md="6" offset-md="3">
+        <ion-button color="primary" fill="clear" expand="full">
+          Switch to Login
+        </ion-button>
         <!--View official documentation on spinners: https://ionicframework.com/docs/api/spinner-->
         <!--Commented because want to use LoadingController-->
         <!-- <ion-button expand="block" color="primary" (click)="onLogin()"
           >Login&nbsp;&nbsp;&nbsp;<ion-spinner color="secondary" *ngIf="isLoading"></ion-spinner>
         </ion-button> -->
-        <ion-button expand="block" color="primary" (click)="onLogin()">
+        <ion-button
+          color="primary"
+          expand="block"
+          fill="outline"
+          (click)="onLogin()"
+        >
           Login
         </ion-button>
       </ion-col>
     </ion-row>
+    <ion-row> </ion-row>
   </ion-grid>
 </ion-content>
