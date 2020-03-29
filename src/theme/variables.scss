@@ -74,6 +74,15 @@
     --ion-color-light-contrast-rgb: 0,0,0;
     --ion-color-light-shade: #d7d8da;
     --ion-color-light-tint: #f5f6f9;
+
+    // You can also set the color of specific element in the entire app, such as toolbar, textbox, or any other.
+    // https://ionicframework.com/docs/theming/themes
+    // Remember in SASS world, you can set get the value of other CSS properties by putting them into var()**
+    // For example like below, with just 2 lines of code, we have made the whole app's toolbars color become primary
+    // Life becomes easier if you know how to use these special Ionic Global CSS Style properties!
+    // You don't have to set attribute color="primary" on every toolbar of your app!
+    --ion-toolbar-background: var(--ion-color-primary);
+    --ion-toolbar-color: var(--ion-color-primary-contrast);
   }
 
 @media (prefers-color-scheme: dark) {
