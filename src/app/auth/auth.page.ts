@@ -11,6 +11,7 @@ import { NgForm } from "@angular/forms";
 })
 export class AuthPage implements OnInit {
   isLoading: boolean = false;
+  isLogin: boolean = false; // Check the user is logged in or not.
   constructor(
     private authService: AuthService,
     private router: Router,
@@ -47,5 +48,9 @@ export class AuthPage implements OnInit {
     console.log("auth.page.ts onSubmit()");
     console.log("auth.page.ts f: ", f);
     console.log("auth.page.ts f.controls: ", f.controls);
+  }
+
+  onSwitchAuthMode() {
+    this.isLogin = ! this.isLogin;
   }
 }

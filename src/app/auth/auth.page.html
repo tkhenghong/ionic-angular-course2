@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Authenticate</ion-title>
+    <ion-title>{{ isLogin ? 'Login' : 'Sign Up'}}</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -68,8 +68,8 @@
         <ion-col size-md="6" offset-md="3">
           <!--Other buttons that wrapped by the form must write type="button"
             so the form won't execute when you click this button.-->
-          <ion-button color="primary" fill="clear" expand="full" type="button">
-            Switch to Login
+          <ion-button color="primary" fill="clear" expand="full" type="button" (click)="onSwitchAuthMode()">
+            Switch to {{ isLogin ? 'Sign Up' : 'Login' }}
           </ion-button>
           <!--View official documentation on spinners: https://ionicframework.com/docs/api/spinner-->
           <!--Commented because want to use LoadingController-->
