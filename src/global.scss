@@ -39,3 +39,11 @@
 .md {
     // Write anything here
 }
+
+// Set the global element (Not class, but Ionic component itself)
+// Remember, you always can go to you required Ionic component, and look at CSS Custom Properties section.
+// This example below, is how you use those Custom CSS properties:
+ion-button { // <--- This is completely acceptable in Ionic world
+    // --color: white;
+    // --background: white;
+}
