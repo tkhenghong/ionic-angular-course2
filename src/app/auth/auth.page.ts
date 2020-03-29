@@ -48,6 +48,22 @@ export class AuthPage implements OnInit {
     console.log("auth.page.ts onSubmit()");
     console.log("auth.page.ts f: ", f);
     console.log("auth.page.ts f.controls: ", f.controls);
+
+    if(!f.valid) {
+      return;
+    }
+
+    const email = f.value.email;
+    const password = f.value.password;
+
+    console.log("auth.page.ts email: ", email);
+    console.log("auth.page.ts password: ", password);
+
+    if(this.isLogin) {
+
+    } else {
+
+    }
   }
 
   onSwitchAuthMode() {
