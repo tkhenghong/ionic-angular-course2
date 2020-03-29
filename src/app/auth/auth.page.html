@@ -5,59 +5,74 @@
 </ion-header>
 
 <ion-content class="ion-padding">
-  <!--Make the login form in the middle of the screen-->
-  <!--https://forum.ionicframework.com/t/vertical-and-horizontal-center/83204-->
-  <ion-grid>
-    <ion-row>
-      <ion-col size-sm="6" offset-sm="3">
-        <ion-list>
-          <!--You may use ion-item directly without ion-list-->
-          <ion-item>
-            <!--This configuration of Email field will give standard animation effect,
+  <!--Angular: Template driven form that use form tag-->
+  <!--#f="ngForm" is required by Angular Template Driven form so that your form's elements now can be accessed by using f attribute from now on-->
+  <!--For example, you can put your "f" attribute-->
+  <form #f="ngForm" (ngSubmit)="onSubmit(f)">
+    <!--Make the login form in the middle of the screen-->
+    <!--https://forum.ionicframework.com/t/vertical-and-horizontal-center/83204-->
+    <ion-grid>
+      <ion-row>
+        <ion-col size-sm="6" offset-sm="3">
+          <ion-list>
+            <!--For each Angular template driven form, you must add ngModel, name and your *name* attribute in every single field.-->
+            <!--You may use ion-item directly without ion-list-->
+            <ion-item>
+              <!--This configuration of Email field will give standard animation effect,
               when the user clicked on the Email field in this page.-->
-            <ion-label position="floating">Email: </ion-label>
-            <ion-input
-              inputmode="email"
-              clearInput
-              autofocus
-              autocomplete
-              required
-            ></ion-input>
-          </ion-item>
-          <ion-item>
-            <!--This configuration of Email field will give standard animation effect,
+              <ion-label position="floating">Email: </ion-label>
+              <ion-input
+                inputmode="email"
+                clearInput
+                autofocus
+                autocomplete
+                required
+                ngModel
+                name="email"
+                email
+              ></ion-input>
+            </ion-item>
+            <ion-item>
+              <!--This configuration of Email field will give standard animation effect,
               when the user clicked on the Email field in this page.-->
-            <ion-label position="floating">Password: </ion-label>
-            <ion-input
-              type="password"
-              clearInput
-              autocomplete
-              required
-            ></ion-input>
-          </ion-item>
-        </ion-list>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col size-md="6" offset-md="3">
-        <ion-button color="primary" fill="clear" expand="full">
-          Switch to Login
-        </ion-button>
-        <!--View official documentation on spinners: https://ionicframework.com/docs/api/spinner-->
-        <!--Commented because want to use LoadingController-->
-        <!-- <ion-button expand="block" color="primary" (click)="onLogin()"
+              <ion-label position="floating">Password: </ion-label>
+              <ion-input
+                type="password"
+                clearInput
+                autocomplete
+                required
+                ngModel
+                name="password"
+                password
+              ></ion-input>
+            </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size-md="6" offset-md="3">
+          <!--Other buttons that wrapped by the form must write type="button"
+            so the form won't execute when you click this button.-->
+          <ion-button color="primary" fill="clear" expand="full" type="button">
+            Switch to Login
+          </ion-button>
+          <!--View official documentation on spinners: https://ionicframework.com/docs/api/spinner-->
+          <!--Commented because want to use LoadingController-->
+          <!-- <ion-button expand="block" color="primary" (click)="onLogin()"
           >Login&nbsp;&nbsp;&nbsp;<ion-spinner color="secondary" *ngIf="isLoading"></ion-spinner>
         </ion-button> -->
-        <ion-button
-          color="primary"
-          expand="block"
-          fill="outline"
-          (click)="onLogin()"
-        >
-          Login
-        </ion-button>
-      </ion-col>
-    </ion-row>
-    <ion-row> </ion-row>
-  </ion-grid>
+          <ion-button
+            color="primary"
+            expand="block"
+            fill="outline"
+            (click)="onLogin()"
+            type="submit"
+          >
+            Login
+          </ion-button>
+        </ion-col>
+      </ion-row>
+      <ion-row> </ion-row>
+    </ion-grid>
+  </form>
 </ion-content>

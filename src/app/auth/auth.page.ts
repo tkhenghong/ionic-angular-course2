@@ -2,6 +2,7 @@ import { Component, OnInit } from "@angular/core";
 import { AuthService } from "./auth.service";
 import { Router } from "@angular/router";
 import { LoadingController } from "@ionic/angular";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: "app-auth",
@@ -39,5 +40,12 @@ export class AuthPage implements OnInit {
       loadingElement.dismiss();
       this.router.navigate(["/", "places", "discover"], { replaceUrl: true }); // Set the Discover page as the first page in the stack navigation.
     }, 1500);
+  }
+
+  // Angular Template driven form: Get the whole form from the HTML page and access the form elements from there.
+  onSubmit(f: NgForm) {
+    console.log("auth.page.ts onSubmit()");
+    console.log("auth.page.ts f: ", f);
+    console.log("auth.page.ts f.controls: ", f.controls);
   }
 }

@@ -9,7 +9,13 @@ import { AuthPageRoutingModule } from "./auth-routing.module";
 import { AuthPage } from "./auth.page";
 
 @NgModule({
-  imports: [CommonModule, FormsModule, IonicModule, AuthPageRoutingModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    IonicModule,
+    AuthPageRoutingModule,
+    FormsModule // Angular Form Module - essential for creating a form and it's validations.
+  ],
   declarations: [AuthPage]
 })
 export class AuthPageModule {}
