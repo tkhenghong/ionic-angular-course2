@@ -47,6 +47,11 @@ export class NewOfferPage implements OnInit {
   }
 
   onCreateOffer() {
+    // Get the value from the Reactive form, you normally will access valid and controls properties to check the form validity and form control values.
     console.log("Creating offered place...");
+    console.log('new-offer.page.ts onCreateOffer()');
+    console.log('new-offer.page.ts this.form: ', this.form);
+    console.log('new-offer.page.ts this.form.valid: ', this.form.valid);
+    console.log('new-offer.page.ts this.form.controls: ', this.form.controls);
   }
 }
