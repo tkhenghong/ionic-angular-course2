@@ -1,8 +1,8 @@
-import { Component, OnInit, Input } from "@angular/core";
+import { Component, OnInit, Input, ViewChild } from "@angular/core";
 import { Place } from "src/app/place.model";
 import { ModalController } from "@ionic/angular";
-import * as moment from "moment";
-import { NgForm } from '@angular/forms';
+// import * as moment from "moment";
+import { NgForm } from "@angular/forms";
 
 @Component({
   selector: "app-create-booking",
@@ -13,6 +13,12 @@ export class CreateBookingComponent implements OnInit {
   // Get the data from the place where you called this modal.
   @Input() selectedPlace: Place;
   @Input() selectedMode: "select" | "random";
+
+  // Read the value by getting access to the form, by using ViewChild (Angular Feature)
+  // @ViewChild("f") form: NgForm;
+  // Problem: Unable to start up the app
+  // Problem: Because didn't give other arguments to the ViewChild
+  @ViewChild("f", { read: NgForm, static: false }) form: NgForm;
 
   // now: moment.Moment = moment();
   // availableFrom: string = this.now.format("YYYY-MM-DD").toString();
@@ -54,14 +60,26 @@ export class CreateBookingComponent implements OnInit {
     }
   }
 
-  onBookPlace(f: NgForm) {
-    if(!f.valid) {
+  onBookPlace() {
+    console.log("create-booking.component.ts onBookPlace()");
+    // Block invalid form from proceeding
+    if (!this.form.valid || !this.datesValid()) {
       return;
     }
+    console.log("create-booking.component.ts Booked.");
     // Send the result data back to where this modal is called.
     // This dismissal is assigned as confirm role****
     this.modalController.dismiss(
-      { message: "This is a dummy message!" },
+      {
+        bookingData: {
+          firstName: this.form.value["first-name"],
+          lastName: this.form.value["last-name"],
+          guestNumber: this.form.value["guest-number"],
+          startDate: this.form.value["date-from"],
+          endDate: this.form.value["date-to"]
+        },
+        message: "This is a dummy message!"
+      },
       "confirm"
     );
   }
@@ -72,5 +90,13 @@ export class CreateBookingComponent implements OnInit {
     // You also can set a role for the dismiss function. The modalController will give a function based on the role for the dismissal.
     // For example, cancel means close the modal.****
     this.modalController.dismiss("testID", "cancel");
+  }
+
+  // Validation check whether toDate is earlier than the startDate or not
+  datesValid() {
+    const startDate = new Date(this.form.value["date-from"]);
+    const endDate = new Date(this.form.value["date-to"]);
+
+    return endDate > startDate;
   }
 }
