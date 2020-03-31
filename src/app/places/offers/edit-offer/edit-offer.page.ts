@@ -13,6 +13,12 @@ import { Place } from "src/app/place.model";
 export class EditOfferPage implements OnInit {
   place: Place;
   form: FormGroup;
+  now: moment.Moment = moment();
+  availableFrom: string = this.now.format("YYYY-MM-DD").toString();
+  availableTo: string = this.now
+    .add(1, "year")
+    .format("YYYY-MM-DD")
+    .toString();
   constructor(
     private route: ActivatedRoute,
     private placeService: PlacesService,
