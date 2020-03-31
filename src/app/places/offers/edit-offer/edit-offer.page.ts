@@ -4,6 +4,7 @@ import { PlacesService } from "../../places.service";
 import { NavController } from "@ionic/angular";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Place } from "src/app/place.model";
+import * as moment from "moment";
 
 @Component({
   selector: "app-edit-offer",
