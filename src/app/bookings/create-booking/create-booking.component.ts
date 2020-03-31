@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from "@angular/core";
 import { Place } from "src/app/place.model";
 import { ModalController } from "@ionic/angular";
+import * as moment from "moment";
 
 @Component({
   selector: "app-create-booking",
@@ -10,6 +11,13 @@ import { ModalController } from "@ionic/angular";
 export class CreateBookingComponent implements OnInit {
   // Get the data from the place where you called this modal.
   @Input() selectedPlace: Place;
+
+  now: moment.Moment = moment();
+  availableFrom: string = this.now.format("YYYY-MM-DD").toString();
+  availableTo: string = this.now
+    .add(1, "year")
+    .format("YYYY-MM-DD")
+    .toString();
 
   constructor(private modalController: ModalController) {}
 
