@@ -90,7 +90,7 @@ export class PlaceDetailPage implements OnInit {
     this.modalController
       .create({
         component: CreateBookingComponent,
-        componentProps: { selectedPlace: this.place }, // Passing data into this modal
+        componentProps: { selectedPlace: this.place, selectedMode: mode }, // Passing data into this modal
         id: "testID"
       })
       .then(modal => {
@@ -135,6 +135,12 @@ export class PlaceDetailPage implements OnInit {
           handler: () => {
             this.showUndoMessage();
           }
+        },
+        {
+          side: 'end',
+          text: "Close",
+          icon: 'close-outline',
+          role: 'cancel'
         }
       ]
     });

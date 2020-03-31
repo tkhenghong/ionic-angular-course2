@@ -11,17 +11,47 @@ import * as moment from "moment";
 export class CreateBookingComponent implements OnInit {
   // Get the data from the place where you called this modal.
   @Input() selectedPlace: Place;
+  @Input() selectedMode: "select" | "random";
 
-  now: moment.Moment = moment();
-  availableFrom: string = this.now.format("YYYY-MM-DD").toString();
-  availableTo: string = this.now
-    .add(1, "year")
-    .format("YYYY-MM-DD")
-    .toString();
+  // now: moment.Moment = moment();
+  // availableFrom: string = this.now.format("YYYY-MM-DD").toString();
+  // availableTo: string = this.now
+  // .add(1, "year")
+  // .format("YYYY-MM-DD")
+  // .toString();
+  startDate: string;
+  endDate: string;
 
   constructor(private modalController: ModalController) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const availableFrom = new Date(this.selectedPlace.availableFrom);
+    const availableTo = new Date(this.selectedPlace.availableTo);
+
+    if (this.selectedMode === "random") {
+      // Generate random starting and ending dates, but both of them must have at least have a few days gap duration
+      this.startDate = new Date(
+        availableFrom.getTime() +
+          Math.random() *
+            (availableTo.getTime() -
+              7 * 24 * 60 * 60 * 1000 -
+              availableFrom.getTime())
+      ).toISOString();
+      this.endDate = new Date(
+        new Date(this.startDate).getTime() +
+          Math.random() *
+            (new Date(this.startDate).getTime() +
+              6 * 24 * 60 * 60 * 1000 -
+              new Date(this.startDate).getTime())
+      ).toISOString();
+
+      console.log(
+        "create-booking.component.ts this.startDate: ",
+        this.startDate
+      );
+      console.log("create-booking.component.ts this.endDate: ", this.endDate);
+    }
+  }
 
   onBookPlace() {
     // Send the result data back to where this modal is called.
