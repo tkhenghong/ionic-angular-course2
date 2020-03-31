@@ -40,6 +40,7 @@ export class EditOfferPage implements OnInit {
   }
 
   initFormGroup() {
+    console.log('edit-offer.page.ts this.place.availableFrom: ', this.place.availableFrom);
     this.form = new FormGroup({
       title: new FormControl(this.place.title, {
         updateOn: "blur", // You can determine when the form control sends valueChanged event, by using updateOn.
@@ -53,11 +54,11 @@ export class EditOfferPage implements OnInit {
         updateOn: "blur",
         validators: [Validators.required, Validators.min(1)]
       }),
-      dateFrom: new FormControl(this.place.dateFrom, {
+      dateFrom: new FormControl(this.place.availableFrom ? this.place.availableFrom.toISOString : undefined, {
         updateOn: "blur",
         validators: [Validators.required]
       }),
-      dateTo: new FormControl(this.place.dateTo, {
+      dateTo: new FormControl(this.place.availableTo ? this.place.availableTo.toISOString: undefined, {
         updateOn: "blur",
         validators: [Validators.required]
       })
