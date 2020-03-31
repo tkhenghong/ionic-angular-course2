@@ -124,8 +124,8 @@ export class PlaceDetailPage implements OnInit {
     // ToastController
     // https://ionicframework.com/docs/api/toast
     const toast = await this.toastController.create({
-      header: 'Booked',
-      message: 'Click to Close',
+      header: 'Booked!',
+      // message: 'Click to Close',
       // position: 'top', // Problem: It's looking horrible in iOS.
       buttons: [
         {

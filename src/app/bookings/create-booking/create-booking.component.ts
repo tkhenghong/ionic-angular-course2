@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { Place } from "src/app/place.model";
 import { ModalController } from "@ionic/angular";
 import * as moment from "moment";
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: "app-create-booking",
@@ -53,7 +54,10 @@ export class CreateBookingComponent implements OnInit {
     }
   }
 
-  onBookPlace() {
+  onBookPlace(f: NgForm) {
+    if(!f.valid) {
+      return;
+    }
     // Send the result data back to where this modal is called.
     // This dismissal is assigned as confirm role****
     this.modalController.dismiss(
