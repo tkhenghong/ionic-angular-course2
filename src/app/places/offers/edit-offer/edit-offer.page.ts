@@ -65,6 +65,9 @@ export class EditOfferPage implements OnInit {
   }
 
   onEditOffer() {
+    if (!this.form.valid) {
+      return;
+    }
     // Get the value from the Reactive form, you normally will access valid and controls properties to check the form validity and form control values.
     console.log("Creating offered place...");
     console.log("new-offer.page.ts onEditOffer()");
