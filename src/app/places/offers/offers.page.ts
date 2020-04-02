@@ -10,11 +10,11 @@ import { IonItemSliding } from "@ionic/angular";
   styleUrls: ["./offers.page.scss"]
 })
 export class OffersPage implements OnInit {
-  loadedPlaces: Place[];
+  offers: Place[];
   constructor(private placesService: PlacesService, private router: Router) {}
 
   ngOnInit() {
-    this.loadedPlaces = this.placesService.places;
+    this.offers = this.placesService.places;
   }
 
   onEdit(offerId: string, slidingItem: IonItemSliding) {
@@ -22,5 +22,6 @@ export class OffersPage implements OnInit {
     console.log("offers.page.ts offerId: ", offerId);
     this.router.navigateByUrl("/places/offers/edit-offer/" + offerId);
     // this.router.navigate(['/', 'places', 'offers', 'edit-offer', offerId]); // Use this also can. Same result.
+    console.log('Editing item', offerId);
   }
 }
