@@ -13,6 +13,7 @@ import { Place } from "src/app/place.model";
 import { PlacesService } from "../../places.service";
 import { Subscription } from "rxjs";
 import { BookingsService } from "src/app/bookings/bookings.service";
+import { AuthService } from 'src/app/auth/auth.service';
 
 @Component({
   selector: "app-place-detail",
@@ -21,6 +22,7 @@ import { BookingsService } from "src/app/bookings/bookings.service";
 })
 export class PlaceDetailPage implements OnInit {
   public place: Place;
+  isBookable: boolean = false;
   private placesSub: Subscription;
 
   constructor(
@@ -36,7 +38,8 @@ export class PlaceDetailPage implements OnInit {
     private actionSheetController: ActionSheetController,
     private toastController: ToastController,
     private bookingServices: BookingsService,
-    private loadingController: LoadingController
+    private loadingController: LoadingController,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
@@ -53,6 +56,7 @@ export class PlaceDetailPage implements OnInit {
         .getPlace(paramMap.get("placeId"))
         .subscribe(place => {
           this.place = place;
+          this.isBookable = place.userId !== this.authService.userId; // Only allow the Booking button if the place is not created by me.
         });
     });
   }

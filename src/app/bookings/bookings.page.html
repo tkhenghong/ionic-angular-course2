@@ -10,13 +10,16 @@
 <ion-content class="ion-padding">
   <ion-grid>
     <ion-row>
+      <ion-col *ngIf="!loadedBookings || loadedBookings.length <= 0" class="ion-text-center">
+        <ion-text>No bookings found.</ion-text>
+      </ion-col>
       <!--He want to make this ion-col only takes 6 spaces when the windows size is medium.
       Also, he wants to offset left and right by 3, making it to be centered.
       So, 6(The ion-col) + 3(offset at left) + 3(offset at right) = 12(Total optimized columns in the ion-row)
       Interesting fact: If you set from middle sized screen, then the larger sized screens
       will still be applied by the same effect too. Resize the screen to see the result.
     -->
-      <ion-col size-md="6" offset-md="3">
+      <ion-col size-md="6" offset-md="3" *ngIf="loadedBookings && loadedBookings.length > 0">
         <ion-list>
           <ion-item-sliding *ngFor="let booking of loadedBookings" #itemSliding>
             <ion-item>

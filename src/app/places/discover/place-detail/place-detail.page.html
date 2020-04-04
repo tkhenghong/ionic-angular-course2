@@ -22,7 +22,7 @@
     </ion-row>
     <ion-row>
       <ion-col size-sm="6" offset-sm="3" class="ion-text-center">
-        <ion-button color="primary" (click)="onBookPlace()" margin>
+        <ion-button color="primary" (click)="onBookPlace()" [disabled]="!isBookable" margin>
           Book
         </ion-button>
       </ion-col>
