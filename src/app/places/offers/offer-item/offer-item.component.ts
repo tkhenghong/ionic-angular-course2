@@ -13,7 +13,8 @@ export class OfferItemComponent implements OnInit {
 
   ngOnInit() {}
 
-  getDummyDate() {
-    return new Date();
-  }
+  // Commented because we can get date data from our Places now
+  // getDummyDate() {
+  //   return new Date();
+  // }
 }

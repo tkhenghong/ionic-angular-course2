@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core";
 import * as moment from "moment";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { PlacesService } from '../../places.service';
-import { Router } from '@angular/router';
+import { PlacesService } from "../../places.service";
+import { Router } from "@angular/router";
+import { LoadingController, ToastController } from "@ionic/angular";
 
 @Component({
   selector: "app-new-offer",
@@ -18,7 +19,12 @@ export class NewOfferPage implements OnInit {
     .format("YYYY-MM-DD")
     .toString();
   form: FormGroup;
-  constructor(private placesService: PlacesService, private router: Router) {}
+  constructor(
+    private placesService: PlacesService,
+    private router: Router,
+    private loadingController: LoadingController,
+    private toastController: ToastController
+  ) {}
 
   ngOnInit() {
     // FormGroup should be created during ngOnInit().
@@ -46,7 +52,7 @@ export class NewOfferPage implements OnInit {
     });
   }
 
-  onCreateOffer() {
+  async onCreateOffer() {
     if (!this.form.valid) {
       return;
     }
@@ -56,11 +62,42 @@ export class NewOfferPage implements OnInit {
     console.log("new-offer.page.ts this.form: ", this.form);
     console.log("new-offer.page.ts this.form.valid: ", this.form.valid);
     console.log("new-offer.page.ts this.form.controls: ", this.form.controls);
-
+    // Show Loading
+    const loadingElement = await this.loadingController.create({
+      message: "Creating place...."
+    });
+    await loadingElement.present();
     // All form values are strings by default.
     // Hint: use + sign in front of the string value to convert into number automatically.
-    this.placesService.addPlace(this.form.value.title, this.form.value.description, +this.form.value.price, new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo));
-    this.form.reset();
-    this.router.navigate(['/', 'places', 'offers']);
+    // Now, because we only used tap() RxJS operator in PlacesService, now here we can get shared by it's Observable object.
+    this.placesService.addPlace(
+      this.form.value.title,
+      this.form.value.description,
+      +this.form.value.price,
+      new Date(this.form.value.dateFrom),
+      new Date(this.form.value.dateTo)
+    ).subscribe(() => {
+      loadingElement.dismiss();
+      this.form.reset();
+      this.router.navigate(["/", "places", "offers"]);
+      this.showOfferCreatedMessage();
+    });
+    
+  }
+
+  async showOfferCreatedMessage() {
+    const toast = await this.toastController.create({
+      header: "Booked!",
+      duration: 1000,
+      buttons: [
+        {
+          side: "end",
+          text: "Close",
+          icon: "close-outline",
+          role: "cancel"
+        }
+      ]
+    });
+    await toast.present();
   }
 }

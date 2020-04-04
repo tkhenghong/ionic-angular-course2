@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Place } from "../place.model";
 import { AuthService } from "../auth/auth.service";
 import { BehaviorSubject } from "rxjs";
-import { take, map } from "rxjs/operators";
+import { take, map, tap, delay } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root"
@@ -83,15 +83,17 @@ export class PlacesService {
     );
 
     // Add something into BehaviourSubject object
-    this._places
-      .pipe(
-        take(1) // Go look at the current places list, but only take 1 once and unsubscribed
-      )
-      .subscribe(places => {
+    // Changed from subscribe() to get the data to use tap.
+    // The difference between tap and subscribe is subscribe will complete(stop) the observable but tap won't complete(stop) the observable.
+    // Also, if you use subscribe here, only here can keep seeing the value, but other places will not able to see the value.
+    // But tap it will not cause any complete(stop) of observable in any situation, but also allows more places to share the same Observable variable.
+    return this._places.pipe(
+      take(1), // Go look at the current places list, but only take 1 once and unsubscribed
+      delay(1000), // Instead of using setTimeout(), in RxJS better to use delay to do the same thing, because even you can delay something is the function of the setTimeout(), but you can't delay the whole Observable for example 1 second.
+      tap(places => {
         // Add the newPlace into the current list of Places
         this._places.next(places.concat(newPlace));
-      }); // this.places.pipe().subscribe(...) also can
-
-    console.log("places.service.ts this._places: ", this._places);
+      })
+    );
   }
 }
