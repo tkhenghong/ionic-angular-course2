@@ -4,7 +4,8 @@ import { PlacesService } from "../../places.service";
 import {
   NavController,
   LoadingController,
-  ToastController
+  ToastController,
+  AlertController
 } from "@ionic/angular";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Place } from "src/app/place.model";
@@ -35,7 +36,8 @@ export class EditOfferPage implements OnInit, OnDestroy {
     private navController: NavController,
     private router: Router,
     private loadingController: LoadingController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private alertController: AlertController,
   ) {}
 
   ngOnInit() {
@@ -53,6 +55,21 @@ export class EditOfferPage implements OnInit, OnDestroy {
         .subscribe(place => {
           this.place = place;
           this.initFormGroup();
+        }, async error => {
+          // Handle the error if an error occurred to HTTP request(For example, network down, invalid data etc.)
+          const alertEl = await this.alertController.create({
+            header: 'An error occurred.',
+            message: `Place could not be fetched. Please try again later. Error: ${error}`,
+            buttons: [
+              {
+                text: 'Okay',
+                handler: () => {
+                  this.router.navigate(['/places/offers'])
+                }
+              }
+            ]
+          });
+          await alertEl.present();
         });
     });
   }
