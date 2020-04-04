@@ -5,43 +5,23 @@ import { BehaviorSubject } from "rxjs";
 import { take, map, tap, delay, switchMap } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 
+interface PlaceData {
+  id: string;
+  title: string;
+  description: string;
+  imageUrl: string;
+  price: number;
+  availableFrom: Date;
+  availableTo: Date;
+  userId: string;
+}
+
 @Injectable({
   providedIn: "root",
 })
 export class PlacesService {
   // RxJS full playlist: https://www.youtube.com/watch?v=T9wOu11uU6U&list=PL55RiY5tL51pHpagYcrN9ubNLVXF8rGVi
-  private _places: BehaviorSubject<Place[]> = new BehaviorSubject<Place[]>([
-    new Place(
-      "p1",
-      "Manhattan Mansion",
-      "In the heart of New York City.",
-      "https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200",
-      149.99,
-      new Date("2020-01-01"),
-      new Date("2020-12-31"),
-      "abc"
-    ),
-    new Place(
-      "p2",
-      "L' Amour Toujours",
-      "A romantic place in Paris!",
-      "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Paris_Night.jpg/1024px-Paris_Night.jpg",
-      189.99,
-      new Date("2020-01-01"),
-      new Date("2020-12-31"),
-      "abc"
-    ),
-    new Place(
-      "p3",
-      "The Foggy Palace",
-      "Not your average city trip!",
-      "https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg",
-      99.99,
-      new Date("2020-01-01"),
-      new Date("2020-12-31"),
-      "abc"
-    ),
-  ]);
+  private _places: BehaviorSubject<Place[]> = new BehaviorSubject<Place[]>([]);
 
   // Inject AuthService to this service to bring the current logged in userId into object creation. Brilliant!
   constructor(
@@ -53,6 +33,48 @@ export class PlacesService {
     // return a copy of this array
     // return [...this._places];
     return this._places.asObservable();
+  }
+
+  // Have an HTTP API to get Places data from Firebase
+  fetchPlaces() {
+    // https://ionic-angular-course-e937d.firebaseio.com -- Original URL of the Database
+    // https://ionic-angular-course-e937d.firebaseio.com/NAMEOFTHEDATABASE.json -- Original URL + the name of the database. (It will auto create the database if it's not created yet.)
+    // If you got any object properties that you not sure or don't know it will return, you can put
+    return this.httpClient
+      .get<{ [key: string]: PlaceData }>(
+        "https://ionic-angular-course-e937d.firebaseio.com/offered-places.json"
+      )
+      .pipe(
+        tap((resData) => {
+          console.log("places.service.ts resData: ", resData);
+        }),
+        map((resData) => {
+          const places = [];
+          for (const key in resData) {
+            // Check the key value from the list of response data objects return from Firebase is exist or not
+            // if (resData.hasOwnProperty(key)) is a recommended practice
+            if (resData.hasOwnProperty(key)) {
+              places.push(
+                new Place(
+                  key,
+                  resData[key].title,
+                  resData[key].description,
+                  resData[key].imageUrl,
+                  resData[key].price,
+                  new Date(resData[key].availableFrom),
+                  new Date(resData[key].availableTo),
+                  resData[key].userId
+                )
+              );
+            }
+          }
+
+          return places;
+        }),
+        tap((places) => {
+          this._places.next(places);
+        })
+      );
   }
 
   // Return the one place but still an Observable
@@ -75,7 +97,7 @@ export class PlacesService {
     dateFrom: Date,
     dateTo: Date
   ) {
-    let generatedId: string
+    let generatedId: string;
 
     const newPlace = new Place(
       Math.random().toString(),
@@ -89,22 +111,22 @@ export class PlacesService {
     );
     // Save to the database.
     return this.httpClient
-      .post<{name: string}>(
+      .post<{ name: string }>(
         "https://ionic-angular-course-e937d.firebaseio.com/offered-places.json",
         { ...newPlace, id: null }
       )
       .pipe(
-        switchMap(resData => {
+        switchMap((resData) => {
           // Firebase have auto generated ID back to you
           generatedId = resData.name;
           return this.places; // Not yet go back to the caller.
         }),
         take(1),
-          tap((places) => {
-        // Add the newPlace into the current list of Places
-        newPlace.id = generatedId;
-        this._places.next(places.concat(newPlace));
-      })
+        tap((places) => {
+          // Add the newPlace into the current list of Places
+          newPlace.id = generatedId;
+          this._places.next(places.concat(newPlace));
+        })
       );
 
     // Add something into BehaviourSubject object
@@ -155,3 +177,39 @@ export class PlacesService {
     );
   }
 }
+
+
+
+
+
+// Old sample data, Places[]:
+// new Place(
+//   "p1",
+//   "Manhattan Mansion",
+//   "In the heart of New York City.",
+//   "https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200",
+//   149.99,
+//   new Date("2020-01-01"),
+//   new Date("2020-12-31"),
+//   "abc"
+// ),
+// new Place(
+//   "p2",
+//   "L' Amour Toujours",
+//   "A romantic place in Paris!",
+//   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Paris_Night.jpg/1024px-Paris_Night.jpg",
+//   189.99,
+//   new Date("2020-01-01"),
+//   new Date("2020-12-31"),
+//   "abc"
+// ),
+// new Place(
+//   "p3",
+//   "The Foggy Palace",
+//   "Not your average city trip!",
+//   "https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg",
+//   99.99,
+//   new Date("2020-01-01"),
+//   new Date("2020-12-31"),
+//   "abc"
+// ),
