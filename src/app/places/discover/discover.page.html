@@ -18,26 +18,35 @@
     <ion-segment-button value="all">All Places</ion-segment-button>
     <ion-segment-button value="bookable">Bookable Places</ion-segment-button>
   </ion-segment>
-  <ion-grid>
+  <!--Show no places can be found-->
+  <ion-grid *ngIf="!relevantPlaces || relevantPlaces.length <= 0">
+    <ion-row>
+      <ion-col size="12" size-sm="8" offset-sm="2" class="ion-text-center">
+        <ion-text>There are no bookable places right now, please come back later!</ion-text>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <!--If there are places then list out the places-->
+  <ion-grid *ngIf="relevantPlaces.length > 0">
     <ion-row>
       <!--Takes the whole row (size 12), set size to 8 when the window is middle sized, and make space the horizontal sides of the ion-col-->
       <ion-col size="12" size-sm="8" offset-sm="2" class="ion-text-center">
         <ion-card>
           <ion-card-header>
             <ion-card-title>
-              {{loadedPlaces[0].title}}
+              {{relevantPlaces[0].title}}
             </ion-card-title>
             <ion-card-subtitle>
-              {{loadedPlaces[0].price | currency}} / Night
+              {{relevantPlaces[0].price | currency}} / Night
               <!--currency is default angular pipe feature-->
             </ion-card-subtitle>
           </ion-card-header>
-          <ion-img [src]="loadedPlaces[0].imageUrl"></ion-img>
+          <ion-img [src]="relevantPlaces[0].imageUrl"></ion-img>
           <ion-card-content>
             <!--Example use of ionic-label. You also can use ion-text. You can do coloring on it. Use ion-text if you're doing basic coloring only.-->
             <p>
               <ion-text color="primary"
-                >{{loadedPlaces[0].description}}</ion-text
+                >{{relevantPlaces[0].description}}</ion-text
               >
             </p>
           </ion-card-content>
@@ -52,7 +61,7 @@
               fill="clear"
               color="primary"
               routerDirection="forward"
-              [routerLink]="['/', 'places', 'discover', 'place-detail', loadedPlaces[0].id]"
+              [routerLink]="['/', 'places', 'discover', 'place-detail', relevantPlaces[0].id]"
             >
               More
             </ion-button>
