@@ -22,7 +22,11 @@ interface PlaceData {
 export class PlacesService {
   // RxJS full playlist: https://www.youtube.com/watch?v=T9wOu11uU6U&list=PL55RiY5tL51pHpagYcrN9ubNLVXF8rGVi
   private _places: BehaviorSubject<Place[]> = new BehaviorSubject<Place[]>([]);
-
+  private databaseURL: string =
+    "https://ionic-angular-course-e937d.firebaseio.com";
+  private databaseName: string = "offered-places";
+  private endURL: string = ".json";
+ 
   // Inject AuthService to this service to bring the current logged in userId into object creation. Brilliant!
   constructor(
     private authService: AuthService,
@@ -42,7 +46,7 @@ export class PlacesService {
     // If you got any object properties that you not sure or don't know it will return, you can put
     return this.httpClient
       .get<{ [key: string]: PlaceData }>(
-        "https://ionic-angular-course-e937d.firebaseio.com/offered-places.json"
+        `${this.databaseURL}/${this.databaseName}${this.endURL}`
       )
       .pipe(
         tap((resData) => {
@@ -112,7 +116,7 @@ export class PlacesService {
     // Save to the database.
     return this.httpClient
       .post<{ name: string }>(
-        "https://ionic-angular-course-e937d.firebaseio.com/offered-places.json",
+        `${this.databaseURL}/${this.databaseName}${this.endURL}`,
         { ...newPlace, id: null }
       )
       .pipe(
@@ -154,12 +158,12 @@ export class PlacesService {
     dateFrom: Date,
     dateTo: Date
   ) {
+    let updatedPlaces: Place[];
     return this._places.pipe(
       take(1),
-      delay(1000), // Fake delay to show spinner
-      tap((places) => {
+      switchMap((places) => {
         const updatedPlaceIndex = places.findIndex((pl) => pl.id === id); // Find the array's index
-        const updatedPlaces = [...places]; // Don't want to mutate the old state
+        updatedPlaces = [...places]; // Don't want to mutate the old state
         const old = updatedPlaces[updatedPlaceIndex]; // Keep the old one temporarily
         updatedPlaces[updatedPlaceIndex] = new Place(
           old.id,
@@ -171,16 +175,21 @@ export class PlacesService {
           dateTo,
           old.userId // Some properties can be retained from old object
         );
-
+        // Edit place using HTTP request
+        return this.httpClient.put(
+          `${this.databaseURL}/${this.databaseName}/${id}${this.endURL}`,
+          {
+            ...updatedPlaces[updatedPlaceIndex],
+            id: null,
+          }
+        );
+      }),
+      tap(() => {
         this._places.next(updatedPlaces);
       })
     );
   }
 }
-
-
-
-
 
 // Old sample data, Places[]:
 // new Place(
