@@ -40,19 +40,18 @@ export class PlaceDetailPage implements OnInit {
     private toastController: ToastController,
     private bookingServices: BookingsService,
     private loadingController: LoadingController,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   ngOnInit() {
-    this.isLoading = true;
     // You don't have to manage this.route.paramMap's Subscription because Angular handled it in lifecycle.
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has("placeId")) {
-        this.navController.navigateBack("/places/offers");
+        // this.navController.navigateBack("/places/offers");
+        this.router.navigateByUrl('/places/offers');
         return;
       }
-
-      console.log("place-detail.page.ts placeId: ", paramMap.get("placeId"));
+      this.isLoading = true;
       // Commented to use RxJS
       // this.place = this.placeService.getPlace(paramMap.get("placeId"));
       this.placesSub = this.placeService
@@ -61,6 +60,20 @@ export class PlaceDetailPage implements OnInit {
           this.isLoading = false;
           this.place = place;
           this.isBookable = place.userId !== this.authService.userId; // Only allow the Booking button if the place is not created by me.
+        }, async error => {
+          const alertEl = await this.alertController.create({
+            header: 'An error occurred.',
+            message: `Could not load place, error: ${error}`,
+            buttons: [
+              {
+                text: 'Okay',
+                handler: () => {
+                  this.router.navigate(['/places/discover']);
+                }
+              }
+            ]
+          });
+          await alertEl.present();
         });
     });
   }

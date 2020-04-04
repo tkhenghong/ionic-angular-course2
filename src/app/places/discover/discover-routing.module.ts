@@ -12,14 +12,13 @@ const routes: Routes = [
     path: "place-detail",
     loadChildren: () =>
       import("./place-detail/place-detail.module").then(
-        m => m.PlaceDetailPageModule
-      )
+        (m) => m.PlaceDetailPageModule
+      ),
   },
-  {}
 ];
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class DiscoverPageRoutingModule {}

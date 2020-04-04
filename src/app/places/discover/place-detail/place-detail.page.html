@@ -4,15 +4,12 @@
       <!--Angular is defaultHref, Ionic is default-href, use Angular-->
       <ion-back-button defaultHref="/places/discover"></ion-back-button>
     </ion-buttons>
-    <ion-title *ngIf="isLoading">
-      <ion-spinner color="primary"></ion-spinner>
-    </ion-title>
-    <ion-title *ngIf="!isLoading">{{ place.title }}</ion-title>
+    <ion-title>{{ isLoading? "Loading..." : place.title }}</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-  <ion-grid *ngIf="isLoading">
+  <ion-grid class="ion-text-center" *ngIf="isLoading">
     <ion-row>
       <ion-col>
         <ion-spinner color="primary"></ion-spinner>
