@@ -5,12 +5,14 @@ import {
   ModalController,
   AlertController,
   ActionSheetController,
-  ToastController
+  ToastController,
+  LoadingController
 } from "@ionic/angular";
 import { CreateBookingComponent } from "src/app/bookings/create-booking/create-booking.component";
 import { Place } from "src/app/place.model";
 import { PlacesService } from "../../places.service";
 import { Subscription } from "rxjs";
+import { BookingsService } from "src/app/bookings/bookings.service";
 
 @Component({
   selector: "app-place-detail",
@@ -32,7 +34,9 @@ export class PlaceDetailPage implements OnInit {
     private route: ActivatedRoute,
     private alertController: AlertController,
     private actionSheetController: ActionSheetController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private bookingServices: BookingsService,
+    private loadingController: LoadingController
   ) {}
 
   ngOnInit() {
@@ -115,11 +119,31 @@ export class PlaceDetailPage implements OnInit {
         // Set a listener to listen for returned data of the modal
         return modal.onDidDismiss();
       })
-      .then(resultData => {
+      .then(async resultData => {
         console.log("place-detail.page.ts resultData: ", resultData);
+        const data = resultData.data.bookingData; // Get booking data
+
         if (resultData.role === "confirm") {
-          console.log("place-detail.page.ts BOOKED!");
-          this.showBookedMessage();
+          const loadingEl = await this.loadingController.create({
+            message: "Booking place..."
+          });
+          await loadingEl.present();
+          this.bookingServices
+            .addBooking(
+              this.place.id,
+              this.place.title,
+              this.place.imageUrl,
+              data.firstName,
+              data.lastName,
+              data.guestNumber,
+              data.startDate,
+              data.endDate
+            )
+            .subscribe(() => {
+              loadingEl.dismiss();
+              console.log("place-detail.page.ts BOOKED!");
+              this.showBookedMessage();
+            });
         }
       });
   }
@@ -141,6 +165,7 @@ export class PlaceDetailPage implements OnInit {
     // https://ionicframework.com/docs/api/toast
     const toast = await this.toastController.create({
       header: "Booked!",
+      duration: 1000,
       // message: 'Click to Close',
       // position: 'top', // Problem: It's looking horrible in iOS.
       buttons: [

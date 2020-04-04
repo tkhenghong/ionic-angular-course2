@@ -74,9 +74,9 @@ export class CreateBookingComponent implements OnInit {
         bookingData: {
           firstName: this.form.value["first-name"],
           lastName: this.form.value["last-name"],
-          guestNumber: this.form.value["guest-number"],
-          startDate: this.form.value["date-from"],
-          endDate: this.form.value["date-to"]
+          guestNumber: +this.form.value["guest-number"],
+          startDate: new Date(this.form.value["date-from"]),
+          endDate: new Date(this.form.value["date-to"])
         },
         message: "This is a dummy message!"
       },
@@ -94,8 +94,12 @@ export class CreateBookingComponent implements OnInit {
 
   // Validation check whether toDate is earlier than the startDate or not
   datesValid() {
-    const startDate = new Date(this.form.value["date-from"]);
-    const endDate = new Date(this.form.value["date-to"]);
+    let startDate;
+    let endDate;
+    if (this.form) {
+      startDate = new Date(this.form.value["date-from"]);
+      endDate = new Date(this.form.value["date-to"]);
+    }
 
     return endDate > startDate;
   }
