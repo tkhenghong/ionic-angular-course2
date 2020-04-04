@@ -1,16 +1,18 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { Place } from "src/app/place.model";
 import { ActivatedRoute } from "@angular/router";
 import { NavController } from "@ionic/angular";
 import { PlacesService } from "../../places.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-offer-bookings",
   templateUrl: "./offer-bookings.page.html",
   styleUrls: ["./offer-bookings.page.scss"]
 })
-export class OfferBookingsPage implements OnInit {
+export class OfferBookingsPage implements OnInit, OnDestroy {
   place: Place;
+  private placesSub: Subscription;
 
   constructor(
     private route: ActivatedRoute,
@@ -26,7 +28,20 @@ export class OfferBookingsPage implements OnInit {
         return;
       }
 
-      this.place = this.placeService.getPlace(paramMap.get('placeId'));
+      // Commented to use RxJS
+      // this.place = this.placeService.getPlace(paramMap.get('placeId'));
+      this.placesSub = this.placeService
+        .getPlace(paramMap.get("placeId"))
+        .subscribe(place => {
+          this.place = place;
+        });
     });
+  }
+
+  ngOnDestroy() {
+    // Remember to destroy all Subscriptions and Observables to avoid memory leaks
+    if (this.placesSub) {
+      this.placesSub.unsubscribe();
+    }
   }
 }

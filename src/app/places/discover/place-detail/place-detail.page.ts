@@ -10,6 +10,7 @@ import {
 import { CreateBookingComponent } from "src/app/bookings/create-booking/create-booking.component";
 import { Place } from "src/app/place.model";
 import { PlacesService } from "../../places.service";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-place-detail",
@@ -18,6 +19,7 @@ import { PlacesService } from "../../places.service";
 })
 export class PlaceDetailPage implements OnInit {
   public place: Place;
+  private placesSub: Subscription;
 
   constructor(
     // Ways to navigate in Ionic application
@@ -30,18 +32,32 @@ export class PlaceDetailPage implements OnInit {
     private route: ActivatedRoute,
     private alertController: AlertController,
     private actionSheetController: ActionSheetController,
-    private toastController: ToastController,
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
+    // You don't have to manage this.route.paramMap's Subscription because Angular handled it in lifecycle.
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has("placeId")) {
         this.navController.navigateBack("/places/offers");
         return;
       }
 
-      this.place = this.placeService.getPlace(paramMap.get("placeId"));
+      // Commented to use RxJS
+      // this.place = this.placeService.getPlace(paramMap.get("placeId"));
+      this.placesSub = this.placeService
+        .getPlace(paramMap.get("placeId"))
+        .subscribe(place => {
+          this.place = place;
+        });
     });
+  }
+
+  ngOnDestroy() {
+    // Remember to destroy all Subscriptions and Observables to avoid memory leaks
+    if (this.placesSub) {
+      this.placesSub.unsubscribe();
+    }
   }
 
   async onBookPlace() {
@@ -124,23 +140,23 @@ export class PlaceDetailPage implements OnInit {
     // ToastController
     // https://ionicframework.com/docs/api/toast
     const toast = await this.toastController.create({
-      header: 'Booked!',
+      header: "Booked!",
       // message: 'Click to Close',
       // position: 'top', // Problem: It's looking horrible in iOS.
       buttons: [
         {
-          side: 'end',
+          side: "end",
           text: "Undo",
-          icon: 'arrow-undo-outline',
+          icon: "arrow-undo-outline",
           handler: () => {
             this.showUndoMessage();
           }
         },
         {
-          side: 'end',
+          side: "end",
           text: "Close",
-          icon: 'close-outline',
-          role: 'cancel'
+          icon: "close-outline",
+          role: "cancel"
         }
       ]
     });
@@ -149,11 +165,13 @@ export class PlaceDetailPage implements OnInit {
 
   async showUndoMessage() {
     const alert = await this.alertController.create({
-      header: 'Undo successful.',
-      buttons: [{
-        text: 'OK',
-        role: 'cancel'
-      }]
+      header: "Undo successful.",
+      buttons: [
+        {
+          text: "OK",
+          role: "cancel"
+        }
+      ]
     });
     await alert.present();
   }

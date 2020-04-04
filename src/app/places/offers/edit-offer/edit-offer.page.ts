@@ -1,17 +1,18 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, OnDestroy } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { PlacesService } from "../../places.service";
 import { NavController } from "@ionic/angular";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Place } from "src/app/place.model";
 import * as moment from "moment";
+import { Subscription } from "rxjs";
 
 @Component({
   selector: "app-edit-offer",
   templateUrl: "./edit-offer.page.html",
   styleUrls: ["./edit-offer.page.scss"]
 })
-export class EditOfferPage implements OnInit {
+export class EditOfferPage implements OnInit, OnDestroy {
   place: Place;
   form: FormGroup;
   now: moment.Moment = moment();
@@ -20,6 +21,8 @@ export class EditOfferPage implements OnInit {
     .add(1, "year")
     .format("YYYY-MM-DD")
     .toString();
+  private placesSub: Subscription;
+
   constructor(
     private route: ActivatedRoute,
     private placeService: PlacesService,
@@ -33,14 +36,29 @@ export class EditOfferPage implements OnInit {
         return;
       }
 
-      this.place = this.placeService.getPlace(paramMap.get("placeId"));
-
-      this.initFormGroup();
+      // Commented to use RxJS
+      // this.place = this.placeService.getPlace(paramMap.get("placeId"));
+      this.placesSub = this.placeService
+        .getPlace(paramMap.get("placeId"))
+        .subscribe(place => {
+          this.place = place;
+          this.initFormGroup();
+        });
     });
   }
 
+  ngOnDestroy() {
+    // Remember to destroy all Subscriptions and Observables to avoid memory leaks
+    if (this.placesSub) {
+      this.placesSub.unsubscribe();
+    }
+  }
+
   initFormGroup() {
-    console.log('edit-offer.page.ts this.place.availableFrom: ', this.place.availableFrom);
+    console.log(
+      "edit-offer.page.ts this.place.availableFrom: ",
+      this.place.availableFrom
+    );
     this.form = new FormGroup({
       title: new FormControl(this.place.title, {
         updateOn: "blur", // You can determine when the form control sends valueChanged event, by using updateOn.
@@ -54,14 +72,22 @@ export class EditOfferPage implements OnInit {
         updateOn: "blur",
         validators: [Validators.required, Validators.min(1)]
       }),
-      dateFrom: new FormControl(this.place.availableFrom ? this.place.availableFrom.toISOString : undefined, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      }),
-      dateTo: new FormControl(this.place.availableTo ? this.place.availableTo.toISOString: undefined, {
-        updateOn: "blur",
-        validators: [Validators.required]
-      })
+      dateFrom: new FormControl(
+        this.place.availableFrom
+          ? this.place.availableFrom.toISOString
+          : undefined,
+        {
+          updateOn: "blur",
+          validators: [Validators.required]
+        }
+      ),
+      dateTo: new FormControl(
+        this.place.availableTo ? this.place.availableTo.toISOString : undefined,
+        {
+          updateOn: "blur",
+          validators: [Validators.required]
+        }
+      )
     });
   }
 
