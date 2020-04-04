@@ -3,9 +3,10 @@ import { Place } from "../place.model";
 import { AuthService } from "../auth/auth.service";
 import { BehaviorSubject } from "rxjs";
 import { take, map, tap, delay } from "rxjs/operators";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class PlacesService {
   // RxJS full playlist: https://www.youtube.com/watch?v=T9wOu11uU6U&list=PL55RiY5tL51pHpagYcrN9ubNLVXF8rGVi
@@ -39,11 +40,14 @@ export class PlacesService {
       new Date("2020-01-01"),
       new Date("2020-12-31"),
       "abc"
-    )
+    ),
   ]);
 
   // Inject AuthService to this service to bring the current logged in userId into object creation. Brilliant!
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private httpClient: HttpClient
+  ) {}
 
   get places() {
     // return a copy of this array
@@ -56,8 +60,8 @@ export class PlacesService {
     // return { ...this._places.find(p => p.id === id) };
     return this._places.pipe(
       take(1),
-      map(places => {
-        return { ...places.find(p => p.id === id) };
+      map((places) => {
+        return { ...places.find((p) => p.id === id) };
       })
     );
   }
@@ -81,20 +85,32 @@ export class PlacesService {
       dateTo,
       this.authService.userId
     );
+    // Save to the database.
+    return this.httpClient
+      .post(
+        "https://ionic-angular-course-e937d.firebaseio.com/offered-places.json",
+        { ...newPlace, id: null }
+      )
+      .pipe(
+        tap((resData) => {
+          console.log("places.service.ts resData: ", resData);
+        })
+      );
 
     // Add something into BehaviourSubject object
     // Changed from subscribe() to get the data to use tap.
     // The difference between tap and subscribe is subscribe will complete(stop) the observable but tap won't complete(stop) the observable.
     // Also, if you use subscribe here, only here can keep seeing the value, but other places will not able to see the value.
     // But tap it will not cause any complete(stop) of observable in any situation, but also allows more places to share the same Observable variable.
-    return this._places.pipe(
-      take(1), // Go look at the current places list, but only take 1 once and unsubscribed
-      delay(1000), // Instead of using setTimeout(), in RxJS better to use delay to do the same thing, because even you can delay something is the function of the setTimeout(), but you can't delay the whole Observable for example 1 second.
-      tap(places => {
-        // Add the newPlace into the current list of Places
-        this._places.next(places.concat(newPlace));
-      })
-    );
+    // Commented below because we will use HTTP to send data to DB and use it's Observable object.
+    // return this._places.pipe(
+    //   take(1), // Go look at the current places list, but only take 1 once and unsubscribed
+    //   delay(1000), // Instead of using setTimeout(), in RxJS better to use delay to do the same thing, because even you can delay something is the function of the setTimeout(), but you can't delay the whole Observable for example 1 second.
+    //   tap((places) => {
+    //     // Add the newPlace into the current list of Places
+    //     this._places.next(places.concat(newPlace));
+    //   })
+    // );
   }
 
   // or editOffer() {}
@@ -109,8 +125,8 @@ export class PlacesService {
     return this._places.pipe(
       take(1),
       delay(1000), // Fake delay to show spinner
-      tap(places => {
-        const updatedPlaceIndex = places.findIndex(pl => pl.id === id); // Find the array's index
+      tap((places) => {
+        const updatedPlaceIndex = places.findIndex((pl) => pl.id === id); // Find the array's index
         const updatedPlaces = [...places]; // Don't want to mutate the old state
         const old = updatedPlaces[updatedPlaceIndex]; // Keep the old one temporarily
         updatedPlaces[updatedPlaceIndex] = new Place(
