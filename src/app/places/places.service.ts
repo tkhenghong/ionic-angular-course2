@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { Place } from "../place.model";
 import { AuthService } from "../auth/auth.service";
 import { BehaviorSubject } from "rxjs";
-import { take, map, tap, delay } from "rxjs/operators";
+import { take, map, tap, delay, switchMap } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 
 @Injectable({
@@ -75,6 +75,8 @@ export class PlacesService {
     dateFrom: Date,
     dateTo: Date
   ) {
+    let generatedId: string
+
     const newPlace = new Place(
       Math.random().toString(),
       title,
@@ -87,14 +89,22 @@ export class PlacesService {
     );
     // Save to the database.
     return this.httpClient
-      .post(
+      .post<{name: string}>(
         "https://ionic-angular-course-e937d.firebaseio.com/offered-places.json",
         { ...newPlace, id: null }
       )
       .pipe(
-        tap((resData) => {
-          console.log("places.service.ts resData: ", resData);
-        })
+        switchMap(resData => {
+          // Firebase have auto generated ID back to you
+          generatedId = resData.name;
+          return this.places; // Not yet go back to the caller.
+        }),
+        take(1),
+          tap((places) => {
+        // Add the newPlace into the current list of Places
+        newPlace.id = generatedId;
+        this._places.next(places.concat(newPlace));
+      })
       );
 
     // Add something into BehaviourSubject object
