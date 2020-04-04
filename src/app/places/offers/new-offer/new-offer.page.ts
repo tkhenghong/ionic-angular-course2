@@ -82,12 +82,11 @@ export class NewOfferPage implements OnInit {
       this.router.navigate(["/", "places", "offers"]);
       this.showOfferCreatedMessage();
     });
-    
   }
 
   async showOfferCreatedMessage() {
     const toast = await this.toastController.create({
-      header: "Booked!",
+      header: "Offer created.",
       duration: 1000,
       buttons: [
         {

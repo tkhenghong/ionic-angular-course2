@@ -1,7 +1,11 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { ActivatedRoute } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { PlacesService } from "../../places.service";
-import { NavController } from "@ionic/angular";
+import {
+  NavController,
+  LoadingController,
+  ToastController
+} from "@ionic/angular";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { Place } from "src/app/place.model";
 import * as moment from "moment";
@@ -26,7 +30,10 @@ export class EditOfferPage implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private placeService: PlacesService,
-    private navController: NavController
+    private navController: NavController,
+    private router: Router,
+    private loadingController: LoadingController,
+    private toastController: ToastController
   ) {}
 
   ngOnInit() {
@@ -74,7 +81,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
       }),
       dateFrom: new FormControl(
         this.place.availableFrom
-          ? this.place.availableFrom.toISOString
+          ? this.place.availableFrom.toISOString()
           : undefined,
         {
           updateOn: "blur",
@@ -82,7 +89,9 @@ export class EditOfferPage implements OnInit, OnDestroy {
         }
       ),
       dateTo: new FormControl(
-        this.place.availableTo ? this.place.availableTo.toISOString : undefined,
+        this.place.availableTo
+          ? this.place.availableTo.toISOString()
+          : undefined,
         {
           updateOn: "blur",
           validators: [Validators.required]
@@ -91,7 +100,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
     });
   }
 
-  onEditOffer() {
+  async onEditOffer() {
     if (!this.form.valid) {
       return;
     }
@@ -101,5 +110,41 @@ export class EditOfferPage implements OnInit, OnDestroy {
     console.log("new-offer.page.ts this.form: ", this.form);
     console.log("new-offer.page.ts this.form.valid: ", this.form.valid);
     console.log("new-offer.page.ts this.form.controls: ", this.form.controls);
+
+    // Show Loading
+    const loadingElement = await this.loadingController.create({
+      message: "Editing place...."
+    });
+    await loadingElement.present();
+    this.placeService
+      .editPlace(
+        this.place.id,
+        this.form.value.title,
+        this.form.value.description,
+        +this.form.value.price,
+        new Date(this.form.value.dateFrom),
+        new Date(this.form.value.dateTo)
+      )
+      .subscribe(() => {
+        loadingElement.dismiss();
+        this.form.reset();
+        this.router.navigate(["/", "places", "offers"]);
+        this.showOfferCreatedMessage();
+      });
+  }
+  async showOfferCreatedMessage() {
+    const toast = await this.toastController.create({
+      header: "Offer edited.",
+      duration: 1000,
+      buttons: [
+        {
+          side: "end",
+          text: "Close",
+          icon: "close-outline",
+          role: "cancel"
+        }
+      ]
+    });
+    await toast.present();
   }
 }

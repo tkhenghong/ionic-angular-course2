@@ -96,4 +96,36 @@ export class PlacesService {
       })
     );
   }
+
+  // or editOffer() {}
+  editPlace(
+    id: string,
+    title: string,
+    description: string,
+    price: number,
+    dateFrom: Date,
+    dateTo: Date
+  ) {
+    return this._places.pipe(
+      take(1),
+      delay(1000), // Fake delay to show spinner
+      tap(places => {
+        const updatedPlaceIndex = places.findIndex(pl => pl.id === id); // Find the array's index
+        const updatedPlaces = [...places]; // Don't want to mutate the old state
+        const old = updatedPlaces[updatedPlaceIndex]; // Keep the old one temporarily
+        updatedPlaces[updatedPlaceIndex] = new Place(
+          old.id,
+          title,
+          description,
+          old.imageUrl,
+          price,
+          dateFrom,
+          dateTo,
+          old.userId // Some properties can be retained from old object
+        );
+
+        this._places.next(updatedPlaces);
+      })
+    );
+  }
 }
