@@ -18,6 +18,7 @@ import { Subscription } from "rxjs";
 })
 export class EditOfferPage implements OnInit, OnDestroy {
   place: Place;
+  placeId: string;
   form: FormGroup;
   now: moment.Moment = moment();
   availableFrom: string = this.now.format("YYYY-MM-DD").toString();
@@ -26,6 +27,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
     .format("YYYY-MM-DD")
     .toString();
   private placesSub: Subscription;
+  isLoading: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -42,11 +44,12 @@ export class EditOfferPage implements OnInit, OnDestroy {
         this.navController.navigateBack("/places/tabs/offers");
         return;
       }
-
+      this.placeId = paramMap.get("placeId");
+      this.isLoading = true;
       // Commented to use RxJS
       // this.place = this.placeService.getPlace(paramMap.get("placeId"));
       this.placesSub = this.placeService
-        .getPlace(paramMap.get("placeId"))
+        .getPlace(this.placeId)
         .subscribe(place => {
           this.place = place;
           this.initFormGroup();
@@ -98,6 +101,7 @@ export class EditOfferPage implements OnInit, OnDestroy {
         }
       )
     });
+    this.isLoading = false;
   }
 
   async onEditOffer() {

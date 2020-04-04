@@ -13,6 +13,7 @@ import { Subscription } from "rxjs";
 export class OfferBookingsPage implements OnInit, OnDestroy {
   place: Place;
   private placesSub: Subscription;
+  isLoading: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,11 +29,13 @@ export class OfferBookingsPage implements OnInit, OnDestroy {
         return;
       }
 
+      this.isLoading = true;
       // Commented to use RxJS
       // this.place = this.placeService.getPlace(paramMap.get('placeId'));
       this.placesSub = this.placeService
         .getPlace(paramMap.get("placeId"))
         .subscribe(place => {
+          this.isLoading = false;
           this.place = place;
         });
     });

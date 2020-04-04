@@ -24,6 +24,7 @@ export class PlaceDetailPage implements OnInit {
   public place: Place;
   isBookable: boolean = false;
   private placesSub: Subscription;
+  isLoading: boolean;
 
   constructor(
     // Ways to navigate in Ionic application
@@ -43,6 +44,7 @@ export class PlaceDetailPage implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.isLoading = true;
     // You don't have to manage this.route.paramMap's Subscription because Angular handled it in lifecycle.
     this.route.paramMap.subscribe(paramMap => {
       if (!paramMap.has("placeId")) {
@@ -50,11 +52,13 @@ export class PlaceDetailPage implements OnInit {
         return;
       }
 
+      console.log("place-detail.page.ts placeId: ", paramMap.get("placeId"));
       // Commented to use RxJS
       // this.place = this.placeService.getPlace(paramMap.get("placeId"));
       this.placesSub = this.placeService
         .getPlace(paramMap.get("placeId"))
         .subscribe(place => {
+          this.isLoading = false;
           this.place = place;
           this.isBookable = place.userId !== this.authService.userId; // Only allow the Booking button if the place is not created by me.
         });

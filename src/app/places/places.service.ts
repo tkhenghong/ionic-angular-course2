@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Place } from "../place.model";
 import { AuthService } from "../auth/auth.service";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, of } from "rxjs";
 import { take, map, tap, delay, switchMap } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 
@@ -26,7 +26,7 @@ export class PlacesService {
     "https://ionic-angular-course-e937d.firebaseio.com";
   private databaseName: string = "offered-places";
   private endURL: string = ".json";
- 
+
   // Inject AuthService to this service to bring the current logged in userId into object creation. Brilliant!
   constructor(
     private authService: AuthService,
@@ -83,6 +83,27 @@ export class PlacesService {
 
   // Return the one place but still an Observable
   getPlace(id: string) {
+    return this.httpClient
+      .get<Place>(
+        `${this.databaseURL}/${this.databaseName}/${id}${this.endURL}`
+      )
+      .pipe(
+        tap((resData) => {
+          console.log("places.service.ts This one? resData: ", resData);
+        }),
+        map((placeData) => {
+          return new Place(
+            id,
+            placeData.title,
+            placeData.description,
+            placeData.imageUrl,
+            placeData.price,
+            new Date(placeData.availableFrom),
+            new Date(placeData.availableTo),
+            placeData.userId
+          );
+        })
+      );
     // return { ...this._places.find(p => p.id === id) };
     return this._places.pipe(
       take(1),
@@ -161,6 +182,14 @@ export class PlacesService {
     let updatedPlaces: Place[];
     return this._places.pipe(
       take(1),
+      switchMap((places) => {
+        // If we are trying to edit the place but the Place[] are not initialized yet
+        if (!places || places.length <= 0) {
+          return this.fetchPlaces(); // Fetch the places now
+        } else {
+          return of(places);
+        }
+      }),
       switchMap((places) => {
         const updatedPlaceIndex = places.findIndex((pl) => pl.id === id); // Find the array's index
         updatedPlaces = [...places]; // Don't want to mutate the old state
