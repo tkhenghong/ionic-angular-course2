@@ -50,5 +50,16 @@ export class BookingsService {
     );
   }
 
+  cancelBooking(bookingId: string) {
+    // Use same RxJS operators to get one, fake loading, get the bookings and filter out the unwanted booking.
+    return this.bookings.pipe(
+      take(1),
+      delay(1000),
+      tap(bookings => {
+        this._bookings.next(bookings.filter(b => b.id !== bookingId));
+      })
+    );
+  }
+
   constructor(private authService: AuthService) {}
 }
