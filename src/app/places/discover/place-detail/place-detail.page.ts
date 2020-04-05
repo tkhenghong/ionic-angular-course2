@@ -9,7 +9,7 @@ import {
   LoadingController,
 } from "@ionic/angular";
 import { CreateBookingComponent } from "src/app/bookings/create-booking/create-booking.component";
-import { Place } from "src/app/place.model";
+import { Place } from "src/app/places/place.model";
 import { PlacesService } from "../../places.service";
 import { Subscription } from "rxjs";
 import { BookingsService } from "src/app/bookings/bookings.service";

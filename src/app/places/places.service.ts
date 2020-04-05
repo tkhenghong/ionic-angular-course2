@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { Place } from "../place.model";
+import { Place } from "./place.model";
 import { AuthService } from "../auth/auth.service";
 import { BehaviorSubject, of } from "rxjs";
 import { take, map, tap, delay, switchMap } from "rxjs/operators";

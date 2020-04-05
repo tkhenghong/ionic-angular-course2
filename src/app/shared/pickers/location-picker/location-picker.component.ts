@@ -3,7 +3,7 @@ import { ModalController } from "@ionic/angular";
 import { MapModalComponent } from "../../map-modal/map-modal.component";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
-import { map } from "rxjs/operators";
+import { map, switchMap, tap } from "rxjs/operators";
 @Component({
   selector: "app-location-picker",
   templateUrl: "./location-picker.component.html",
@@ -30,11 +30,15 @@ export class LocationPickerComponent implements OnInit {
       if (!modalData || !modalData.data) {
         return;
       }
-      this.getAddress(modalData.data.lat, modalData.data.lng).subscribe(
-        (address) => {
-          console.log("location-picker.component.ts address: ", address);
-        }
-      );
+      this.getAddress(modalData.data.lat, modalData.data.lng)
+        .pipe(
+          tap((address) => {
+            console.log("location-picker.component.ts address: ", address);
+          }),
+          switchMap(address => {
+
+          })
+        );
     });
   }
 

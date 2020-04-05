@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
-import { Place } from "src/app/place.model";
+import { Place } from "src/app/places/place.model";
 import { PlacesService } from "../places.service";
 import { Router } from "@angular/router";
 import { IonItemSliding } from "@ionic/angular";

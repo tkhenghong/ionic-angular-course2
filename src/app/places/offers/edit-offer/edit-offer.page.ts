@@ -8,7 +8,7 @@ import {
   AlertController
 } from "@ionic/angular";
 import { FormGroup, FormControl, Validators } from "@angular/forms";
-import { Place } from "src/app/place.model";
+import { Place } from "src/app/places/place.model";
 import * as moment from "moment";
 import { Subscription } from "rxjs";
 

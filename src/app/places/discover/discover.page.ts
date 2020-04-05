@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from "@angular/core";
 import { PlacesService } from "../places.service";
-import { Place } from "../../place.model";
+import { Place } from "../place.model";
 import { MenuController } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AuthService } from "src/app/auth/auth.service";
