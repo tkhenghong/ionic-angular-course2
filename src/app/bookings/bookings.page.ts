@@ -16,6 +16,7 @@ import { Subscription } from "rxjs";
 export class BookingsPage implements OnInit, OnDestroy {
   loadedBookings: Booking[];
   private bookingSub: Subscription;
+  isLoading: boolean;
 
   constructor(
     private bookingsService: BookingsService,
@@ -26,6 +27,13 @@ export class BookingsPage implements OnInit, OnDestroy {
   ngOnInit() {
     this.bookingSub = this.bookingsService.bookings.subscribe(bookings => {
       this.loadedBookings = bookings;
+    });
+  }
+
+  ionViewWillEnter() {
+    this.isLoading = true;
+    this.bookingsService.fetchBookings().subscribe(() => {
+      this.isLoading = false;
     });
   }
 
@@ -50,7 +58,7 @@ export class BookingsPage implements OnInit, OnDestroy {
 
   async showBookingCancelledMessage() {
     const toastEl = await this.toastController.create({
-      message: "Booking cancelled.",
+      message: "Booking cancelled/deleted.",
       duration: 1000,
       buttons: [
         {

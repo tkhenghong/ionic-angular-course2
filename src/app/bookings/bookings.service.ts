@@ -2,11 +2,24 @@ import { Injectable } from "@angular/core";
 import { Booking } from "./booking.model";
 import { BehaviorSubject } from "rxjs";
 import { AuthService } from "../auth/auth.service";
-import { take, tap, delay, switchMap } from "rxjs/operators";
+import { take, tap, delay, switchMap, map } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 
 // Bring over environment variables
 import { environment } from "../../environments/environment";
+
+interface BookingData {
+  id: string;
+  placeId: string;
+  userId: string;
+  placeTitle: string;
+  placeImage: string;
+  firstName: string;
+  lastName: string;
+  guestNumber: number;
+  bookedFrom: string;
+  bookedTo: string;
+}
 
 // Every service that you created, you will see this providedIn: root thing.
 // This actually means it will be loaded and can be accessed by whole app scope.
@@ -24,6 +37,41 @@ export class BookingsService {
 
   get bookings() {
     return this._bookings.asObservable();
+  }
+
+  fetchBookings() {
+    return this.httpClient
+      .get<{ [key: string]: BookingData }>(
+        `${this.databaseURL}/${this.databaseName}${this.endURL}?orderBy="userId"&equalTo="${this.authService.userId}"`
+      )
+      .pipe(
+        map((bookingData) => {
+          const bookings = [];
+          for (const key in bookingData) {
+            if (bookingData.hasOwnProperty(key)) {
+              bookings.push(
+                new Booking(
+                  key,
+                  bookingData[key].placeId,
+                  bookingData[key].userId,
+                  bookingData[key].placeTitle,
+                  bookingData[key].placeImage,
+                  bookingData[key].firstName,
+                  bookingData[key].lastName,
+                  bookingData[key].guestNumber,
+                  new Date(bookingData[key].bookedFrom),
+                  new Date(bookingData[key].bookedTo)
+                )
+              );
+            }
+          }
+
+          return bookings;
+        }),
+        tap((bookings) => {
+          this._bookings.next(bookings);
+        })
+      );
   }
 
   addBooking(
@@ -70,14 +118,24 @@ export class BookingsService {
   }
 
   cancelBooking(bookingId: string) {
-    // Use same RxJS operators to get one, fake loading, get the bookings and filter out the unwanted booking.
-    return this.bookings.pipe(
+    return this.httpClient.delete(`${this.databaseURL}/${this.databaseName}/${bookingId}${this.endURL}`)
+    .pipe(
+      switchMap(() => {
+        return this.bookings;
+      }),
       take(1),
-      delay(1000),
-      tap((bookings) => {
+      tap(bookings => {
         this._bookings.next(bookings.filter((b) => b.id !== bookingId));
       })
     );
+    // Use same RxJS operators to get one, fake loading, get the bookings and filter out the unwanted booking.
+    // return this.bookings.pipe(
+    //   take(1),
+    //   delay(1000),
+    //   tap((bookings) => {
+    //     this._bookings.next(bookings.filter((b) => b.id !== bookingId));
+    //   })
+    // );
   }
 
   constructor(
