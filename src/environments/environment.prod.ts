@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  databaseURL: "https://ionic-angular-course-e937d.firebaseio.com",
 };

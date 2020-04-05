@@ -6,19 +6,19 @@ import {
   AlertController,
   ActionSheetController,
   ToastController,
-  LoadingController
+  LoadingController,
 } from "@ionic/angular";
 import { CreateBookingComponent } from "src/app/bookings/create-booking/create-booking.component";
 import { Place } from "src/app/place.model";
 import { PlacesService } from "../../places.service";
 import { Subscription } from "rxjs";
 import { BookingsService } from "src/app/bookings/bookings.service";
-import { AuthService } from 'src/app/auth/auth.service';
+import { AuthService } from "src/app/auth/auth.service";
 
 @Component({
   selector: "app-place-detail",
   templateUrl: "./place-detail.page.html",
-  styleUrls: ["./place-detail.page.scss"]
+  styleUrls: ["./place-detail.page.scss"],
 })
 export class PlaceDetailPage implements OnInit {
   public place: Place;
@@ -40,15 +40,15 @@ export class PlaceDetailPage implements OnInit {
     private toastController: ToastController,
     private bookingServices: BookingsService,
     private loadingController: LoadingController,
-    private authService: AuthService,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
     // You don't have to manage this.route.paramMap's Subscription because Angular handled it in lifecycle.
-    this.route.paramMap.subscribe(paramMap => {
+    this.route.paramMap.subscribe((paramMap) => {
       if (!paramMap.has("placeId")) {
         // this.navController.navigateBack("/places/offers");
-        this.router.navigateByUrl('/places/offers');
+        this.router.navigateByUrl("/places/offers");
         return;
       }
       this.isLoading = true;
@@ -56,25 +56,28 @@ export class PlaceDetailPage implements OnInit {
       // this.place = this.placeService.getPlace(paramMap.get("placeId"));
       this.placesSub = this.placeService
         .getPlace(paramMap.get("placeId"))
-        .subscribe(place => {
-          this.isLoading = false;
-          this.place = place;
-          this.isBookable = place.userId !== this.authService.userId; // Only allow the Booking button if the place is not created by me.
-        }, async error => {
-          const alertEl = await this.alertController.create({
-            header: 'An error occurred.',
-            message: `Could not load place, error: ${error}`,
-            buttons: [
-              {
-                text: 'Okay',
-                handler: () => {
-                  this.router.navigate(['/places/discover']);
-                }
-              }
-            ]
-          });
-          await alertEl.present();
-        });
+        .subscribe(
+          (place) => {
+            this.isLoading = false;
+            this.place = place;
+            this.isBookable = place.userId !== this.authService.userId; // Only allow the Booking button if the place is not created by me.
+          },
+          async (error) => {
+            const alertEl = await this.alertController.create({
+              header: "An error occurred.",
+              message: `Could not load place, error: ${error}`,
+              buttons: [
+                {
+                  text: "Okay",
+                  handler: () => {
+                    this.router.navigate(["/places/discover"]);
+                  },
+                },
+              ],
+            });
+            await alertEl.present();
+          }
+        );
     });
   }
 
@@ -105,20 +108,20 @@ export class PlaceDetailPage implements OnInit {
           text: "Select Date",
           handler: () => {
             this.openBookingModal("select");
-          }
+          },
         },
         {
           text: "Random Date",
           handler: () => {
             this.openBookingModal("random");
-          }
+          },
         },
         {
           text: "Cancel",
-          role: "cancel"
+          role: "cancel",
           // role: 'destructive' // This is used when the user wants to delete something, and you show this button as red.
-        }
-      ]
+        },
+      ],
     });
 
     actionSheetElement.present();
@@ -132,21 +135,21 @@ export class PlaceDetailPage implements OnInit {
       .create({
         component: CreateBookingComponent,
         componentProps: { selectedPlace: this.place, selectedMode: mode }, // Passing data into this modal
-        id: "testID"
+        id: "testID",
       })
-      .then(modal => {
+      .then((modal) => {
         modal.present();
 
         // Set a listener to listen for returned data of the modal
         return modal.onDidDismiss();
       })
-      .then(async resultData => {
+      .then(async (resultData) => {
         console.log("place-detail.page.ts resultData: ", resultData);
         const data = resultData.data.bookingData; // Get booking data
 
         if (resultData.role === "confirm") {
           const loadingEl = await this.loadingController.create({
-            message: "Booking place..."
+            message: "Booking place...",
           });
           await loadingEl.present();
           this.bookingServices
@@ -196,15 +199,15 @@ export class PlaceDetailPage implements OnInit {
           icon: "arrow-undo-outline",
           handler: () => {
             this.showUndoMessage();
-          }
+          },
         },
         {
           side: "end",
           text: "Close",
           icon: "close-outline",
-          role: "cancel"
-        }
-      ]
+          role: "cancel",
+        },
+      ],
     });
     await toast.present();
   }
@@ -215,9 +218,9 @@ export class PlaceDetailPage implements OnInit {
       buttons: [
         {
           text: "OK",
-          role: "cancel"
-        }
-      ]
+          role: "cancel",
+        },
+      ],
     });
     await alert.present();
   }

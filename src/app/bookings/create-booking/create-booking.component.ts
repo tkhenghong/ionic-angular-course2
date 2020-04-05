@@ -7,7 +7,7 @@ import { NgForm } from "@angular/forms";
 @Component({
   selector: "app-create-booking",
   templateUrl: "./create-booking.component.html",
-  styleUrls: ["./create-booking.component.scss"]
+  styleUrls: ["./create-booking.component.scss"],
 })
 export class CreateBookingComponent implements OnInit {
   // Get the data from the place where you called this modal.
@@ -76,9 +76,9 @@ export class CreateBookingComponent implements OnInit {
           lastName: this.form.value["last-name"],
           guestNumber: +this.form.value["guest-number"],
           startDate: new Date(this.form.value["date-from"]),
-          endDate: new Date(this.form.value["date-to"])
+          endDate: new Date(this.form.value["date-to"]),
         },
-        message: "This is a dummy message!"
+        message: "This is a dummy message!",
       },
       "confirm"
     );

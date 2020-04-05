@@ -5,6 +5,9 @@ import { BehaviorSubject, of } from "rxjs";
 import { take, map, tap, delay, switchMap } from "rxjs/operators";
 import { HttpClient } from "@angular/common/http";
 
+// Bring over environment variables
+import { environment } from "../../environments/environment";
+
 interface PlaceData {
   id: string;
   title: string;
@@ -22,8 +25,7 @@ interface PlaceData {
 export class PlacesService {
   // RxJS full playlist: https://www.youtube.com/watch?v=T9wOu11uU6U&list=PL55RiY5tL51pHpagYcrN9ubNLVXF8rGVi
   private _places: BehaviorSubject<Place[]> = new BehaviorSubject<Place[]>([]);
-  private databaseURL: string =
-    "https://ionic-angular-course-e937d.firebaseio.com";
+  private databaseURL: string = environment.databaseURL;
   private databaseName: string = "offered-places";
   private endURL: string = ".json";
 
