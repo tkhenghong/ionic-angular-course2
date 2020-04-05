@@ -7,6 +7,8 @@ import {
   Renderer2,
 } from "@angular/core";
 import { ModalController, ToastController } from "@ionic/angular";
+import { environment } from "../../../environments/environment";
+
 // Referred AGM tutorial: https://dev.to/devpato/setup-google-maps-with-agm-in-angular-app-33em
 @Component({
   selector: "app-map-modal",
@@ -19,7 +21,7 @@ export class MapModalComponent implements OnInit, AfterViewInit {
   // map: google.maps.Map; // After brought in Google Map Types, you can call it here.
   lat = -34.397;
   lng = 150.644;
-  zoom = 16;
+  zoom = environment.satelliteImageZoom;
   private selectedCoords: {lat: string, lng: string};
 
   constructor(
