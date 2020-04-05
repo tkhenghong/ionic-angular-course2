@@ -7,7 +7,7 @@ import { HttpClient } from "@angular/common/http";
 
 // Bring over environment variables
 import { environment } from "../../environments/environment";
-import { PlaceLocation } from './location.model';
+import { PlaceLocation } from "./location.model";
 
 interface PlaceData {
   id: string;
@@ -72,7 +72,7 @@ export class PlacesService {
                   new Date(resData[key].availableFrom),
                   new Date(resData[key].availableTo),
                   resData[key].userId,
-                  resData[key].location,
+                  resData[key].location
                 )
               );
             }

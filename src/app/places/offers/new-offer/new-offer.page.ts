@@ -59,7 +59,7 @@ export class NewOfferPage implements OnInit {
 
   onLocationPicked(placeLocation: PlaceLocation) {
     // Pass the location value emitted from LocationPickerComponent to the FormControl
-    this.form.patchValue({location: location});
+    this.form.patchValue({location: placeLocation});
   }
 
   async onCreateOffer() {

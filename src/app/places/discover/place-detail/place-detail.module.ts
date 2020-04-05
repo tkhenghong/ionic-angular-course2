@@ -8,13 +8,15 @@ import { PlaceDetailPageRoutingModule } from './place-detail-routing.module';
 
 import { PlaceDetailPage } from './place-detail.page';
 import { CreateBookingComponent } from 'src/app/bookings/create-booking/create-booking.component';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    PlaceDetailPageRoutingModule
+    PlaceDetailPageRoutingModule,
+    SharedModule
   ],
   // Add CreateBookingComponent model into the declarations and entryComponents
   declarations: [PlaceDetailPage, CreateBookingComponent], // Put declaration of CreateBookingComponent in here, so it's only loaded when PlaceDetailPage is loaded

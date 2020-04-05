@@ -6,6 +6,7 @@ import {
   ElementRef,
   Renderer2,
   OnDestroy,
+  Input,
 } from "@angular/core";
 import { ModalController, ToastController } from "@ionic/angular";
 import { environment } from "../../../environments/environment";
@@ -22,8 +23,11 @@ export class MapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   clickListener: any;
   googleMaps: any;
 
-  lat = -34.397;
-  lng = 150.644;
+  @Input() center = { lat: -34.397, lng: 150.644};
+  @Input() selectable = true;
+  @Input() closeButtonText = 'Cancel';
+  @Input() title = 'Pick Location';
+
   zoom = environment.satelliteImageZoom;
   private selectedCoords: { lat: string; lng: string };
 
@@ -100,11 +104,13 @@ export class MapModalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // https://stackoverflow.com/questions/44887015/angular-2-google-maps-get-coordinates-from-click-position-on-map-to-update-mark
   onMapClick(event) {
-    console.log(event.coords.lat);
-    console.log(event.coords.lng);
-    this.selectedCoords = { lat: event.coords.lat, lng: event.coords.lng };
-
-    this.modalController.dismiss(this.selectedCoords);
+    if(this.selectable) {
+      console.log(event.coords.lat);
+      console.log(event.coords.lng);
+      this.selectedCoords = { lat: event.coords.lat, lng: event.coords.lng };
+  
+      this.modalController.dismiss(this.selectedCoords);
+    }
   }
 
   private async showGoogleMapsNotLoadedMessage(err: any) {
