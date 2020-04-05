@@ -5,6 +5,7 @@ import {
   ViewChild,
   ElementRef,
   Renderer2,
+  OnDestroy,
 } from "@angular/core";
 import { ModalController, ToastController } from "@ionic/angular";
 import { environment } from "../../../environments/environment";
@@ -15,20 +16,21 @@ import { environment } from "../../../environments/environment";
   templateUrl: "./map-modal.component.html",
   styleUrls: ["./map-modal.component.scss"],
 })
-export class MapModalComponent implements OnInit, AfterViewInit {
+export class MapModalComponent implements OnInit, AfterViewInit, OnDestroy {
   // Google Map stuffs. Link: https://dev.to/devpato/setup-google-map-in-angular-app-the-pro-way-3m9p
   @ViewChild("map", { static: false }) gmap: ElementRef;
-  // map: google.maps.Map; // After brought in Google Map Types, you can call it here.
+  clickListener: any;
+  googleMaps: any;
+
   lat = -34.397;
   lng = 150.644;
   zoom = environment.satelliteImageZoom;
-  private selectedCoords: {lat: string, lng: string};
+  private selectedCoords: { lat: string; lng: string };
 
   constructor(
     private modalController: ModalController,
-    private toastController: ToastController
-  ) // private renderer2: Renderer2 // Angular updated way to direct manipulate DOM elements
-  {}
+    private toastController: ToastController // private renderer2: Renderer2 // Angular updated way to direct manipulate DOM elements
+  ) {}
 
   ngOnInit() {}
 
@@ -37,6 +39,7 @@ export class MapModalComponent implements OnInit, AfterViewInit {
     // Commented because unable to use it.
     // this.getGoogleMaps()
     //   .then((googleMaps) => {
+    //     this.googleMaps = googleMaps;
     //     console.log('googleMaps object: ', googleMaps);
     //     const mapEl = this.gmap.nativeElement;
     //     const map = new googleMaps.Map(mapEl, {
@@ -47,7 +50,7 @@ export class MapModalComponent implements OnInit, AfterViewInit {
     //       zoom: 16, // zoom means zoom how many times
     //     });
     //     // Listen until the Google Maps has loaded finished.
-    //     googleMaps.event.addListenerOnce(map, "idle", () => {
+    //     this.clickListener = this.googleMaps.event.addListenerOnce(map, "idle", () => {
     //       this.renderer2.addClass(mapEl, 'visible');
     //     });
     //   })
@@ -55,6 +58,10 @@ export class MapModalComponent implements OnInit, AfterViewInit {
     //     console.error("map-modal.component.ts err: ", err);
     //     this.showGoogleMapsNotLoadedMessage(err);
     //   });
+  }
+
+  ngOnDestroy() {
+    // this.googleMaps.event.removeListener(this.clickListener); // Destroy the listener so we don't create memory leak.
   }
 
   onCancel() {
@@ -95,7 +102,7 @@ export class MapModalComponent implements OnInit, AfterViewInit {
   onMapClick(event) {
     console.log(event.coords.lat);
     console.log(event.coords.lng);
-    this.selectedCoords = {lat: event.coords.lat, lng: event.coords.lng};
+    this.selectedCoords = { lat: event.coords.lat, lng: event.coords.lng };
 
     this.modalController.dismiss(this.selectedCoords);
   }
