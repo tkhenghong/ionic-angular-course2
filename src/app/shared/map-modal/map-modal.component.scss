@@ -1,0 +1,21 @@
+// Make Google Map visible and defined the Map's dimension.
+// .map {
+//     position: absolute;
+//     height: 100%;
+//     width: 100%;
+
+//     background-color: transparent;
+
+//     opacity: 0;
+//     transition: opacity 150ms ease-in; // We need to load Google Maps but it will take a couple milliseconds so we show it in animation ease in.
+// }
+
+// .map .visible {
+//     opacity: 1;
+// }
+
+agm-map {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+}

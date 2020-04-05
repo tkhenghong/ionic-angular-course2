@@ -7,5 +7,5 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <div class="map" #map></div>
+  <agm-map [latitude]="lat" [longitude]="lng" [zoom]="zoom" (mapClick)="onMapClick($event)" #map></agm-map>
 </ion-content>

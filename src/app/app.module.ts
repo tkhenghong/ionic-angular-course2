@@ -10,6 +10,9 @@ import { AppComponent } from "./app.component";
 import { AppRoutingModule } from "./app-routing.module";
 
 import { HttpClientModule } from "@angular/common/http";
+import { AgmCoreModule } from '@agm/core';
+
+import { environment } from '../environments/environment';
 
 @NgModule({
   declarations: [AppComponent],
@@ -27,6 +30,9 @@ import { HttpClientModule } from "@angular/common/http";
     HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule,
+    AgmCoreModule.forRoot({
+      apiKey: environment.googleMapAPIKey,
+    })
   ],
   providers: [
     StatusBar,
