@@ -7,6 +7,7 @@ import { HttpClient } from "@angular/common/http";
 
 // Bring over environment variables
 import { environment } from "../../environments/environment";
+import { PlaceLocation } from './location.model';
 
 interface PlaceData {
   id: string;
@@ -17,6 +18,7 @@ interface PlaceData {
   availableFrom: Date;
   availableTo: Date;
   userId: string;
+  location: PlaceLocation;
 }
 
 @Injectable({
@@ -69,7 +71,8 @@ export class PlacesService {
                   resData[key].price,
                   new Date(resData[key].availableFrom),
                   new Date(resData[key].availableTo),
-                  resData[key].userId
+                  resData[key].userId,
+                  resData[key].location,
                 )
               );
             }
@@ -102,7 +105,8 @@ export class PlacesService {
             placeData.price,
             new Date(placeData.availableFrom),
             new Date(placeData.availableTo),
-            placeData.userId
+            placeData.userId,
+            placeData.location
           );
         })
       );
@@ -122,7 +126,8 @@ export class PlacesService {
     description: string,
     price: number,
     dateFrom: Date,
-    dateTo: Date
+    dateTo: Date,
+    placeLocation: PlaceLocation
   ) {
     let generatedId: string;
 
@@ -134,7 +139,8 @@ export class PlacesService {
       price,
       dateFrom,
       dateTo,
-      this.authService.userId
+      this.authService.userId,
+      placeLocation
     );
     // Save to the database.
     return this.httpClient
@@ -204,7 +210,8 @@ export class PlacesService {
           price,
           dateFrom,
           dateTo,
-          old.userId // Some properties can be retained from old object
+          old.userId, // Some properties can be retained from old object
+          old.location
         );
         // Edit place using HTTP request
         return this.httpClient.put(
