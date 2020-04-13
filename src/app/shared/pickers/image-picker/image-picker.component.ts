@@ -5,6 +5,7 @@ import {
   EventEmitter,
   ViewChild,
   ElementRef,
+  Input,
 } from "@angular/core";
 import {
   Capacitor,
@@ -24,6 +25,7 @@ import { environment } from "../../../../environments/environment";
 export class ImagePickerComponent implements OnInit {
   selectedImage: string;
   usePicker: boolean = false;
+  @Input() showPreview:boolean = false;
 
   @ViewChild("filePicker", { static: false }) filePickerRef: ElementRef<
     HTMLInputElement

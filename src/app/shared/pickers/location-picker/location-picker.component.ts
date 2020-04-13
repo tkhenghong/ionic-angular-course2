@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import { Component, OnInit, Output, EventEmitter, Input } from "@angular/core";
 import {
   ModalController,
   ActionSheetController,
@@ -29,6 +29,8 @@ export class LocationPickerComponent implements OnInit {
 
   // Send an event out of this component
   @Output() locationPick = new EventEmitter<PlaceLocation>();
+
+  @Input() showPreview:boolean = false;
 
   constructor(
     private modalController: ModalController,
