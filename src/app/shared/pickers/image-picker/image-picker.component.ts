@@ -1,11 +1,18 @@
-import { Component, OnInit, Output, EventEmitter } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Output,
+  EventEmitter,
+  ViewChild,
+  ElementRef,
+} from "@angular/core";
 import {
   Capacitor,
   Plugins,
   CameraSource,
   CameraResultType,
 } from "@capacitor/core";
-import { AlertController } from "@ionic/angular";
+import { AlertController, Platform } from "@ionic/angular";
 
 import { environment } from "../../../../environments/environment";
 
@@ -16,16 +23,59 @@ import { environment } from "../../../../environments/environment";
 })
 export class ImagePickerComponent implements OnInit {
   selectedImage: string;
+  usePicker: boolean = false;
+
+  @ViewChild("filePicker", { static: false }) filePickerRef: ElementRef<
+    HTMLInputElement
+  >;
 
   @Output() imagePick = new EventEmitter<string>();
 
-  constructor(private alertController: AlertController) {}
+  constructor(
+    private alertController: AlertController,
+    private platform: Platform
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    console.log("this.platform.is('mobile'): ", this.platform.is("mobile")); // True when desktop Chrome inspection mode shrinks the window and makes it think it is in the mobile's browser. Any window that is small enough will make it true.
+    console.log("this.platform.is('hybrid'): ", this.platform.is("hybrid")); // Only true when running on Android/iOS simulator/device.
+    console.log("this.platform.is('ios'): ", this.platform.is("ios")); // Only true when choose iOS device in desktop Chrome inspect mode with iPhone X, or in true iOS simulator/device.
+    console.log("this.platform.is('android'): ", this.platform.is("android")); // This is false. Only true when choosing Pixel XL device in desktop Chrome inspect mode, or in true Android simulator/device.
+    console.log("this.platform.is('desktop'): ", this.platform.is("desktop")); // This is false. Only true when you are not choosing any mobile device's resolution to view in inspect mode of desktop Chrome browser.
+
+    if (
+      (this.platform.is("mobile") && !this.platform.is("hybrid")) ||
+      this.platform.is("desktop")
+    ) {
+      this.usePicker = true;
+    }
+  }
+
+  onFileChosen(event: Event) {
+    console.log("image-picker.component.ts onFileChosen()");
+    console.log("image-picker.component.ts event: ", event);
+    // Extract the file from the event
+    const pickedFile = (event.target as HTMLInputElement).files[0];
+    // Convert it to base64 string
+    if (!pickedFile) {
+      this.showUnableGetPhotoAlert();
+      return;
+    }
+    // Convert it to base64 string from File
+    const fr = new FileReader();
+
+    fr.onload = () => {
+      const dataUrl = fr.result.toString();
+      this.selectedImage = dataUrl;
+    };
+
+    fr.readAsDataURL(pickedFile);
+  }
 
   onPickImage() {
-    if (!Capacitor.isPluginAvailable("Camera")) {
-      this.showUnableGetPhotoAlert();
+    if (!Capacitor.isPluginAvailable("Camera") || this.usePicker) {
+      this.filePickerRef.nativeElement.click(); // Do what file picker normally does (Like select a file in the browser)
+      // this.showUnableGetPhotoAlert(); // Commented. Using fallback option
       // If the device doesn't have Camera
       return;
     } else {
