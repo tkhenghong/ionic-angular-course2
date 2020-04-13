@@ -6,6 +6,8 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { AuthService } from "./auth/auth.service";
 import { Router } from "@angular/router";
 
+import { Plugins, Capacitor } from '@capacitor/core';
+
 @Component({
   selector: "app-root",
   templateUrl: "app.component.html",
@@ -16,6 +18,7 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
+
     private authService: AuthService,
     private router: Router
   ) {
@@ -23,9 +26,21 @@ export class AppComponent {
   }
 
   initializeApp() {
+    // Check what platform that this app is running on.
+    console.log('this.platform.is(\'hybrid\'): ', this.platform.is('hybrid'));
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
-      this.splashScreen.hide();
+
+
+      // Don't want to use these, using Capacitor to set splash screens
+      // this.statusBar.styleDefault();
+      // this.splashScreen.hide();
+
+      // Use capacitor to close the splash screen
+      if(Capacitor.isPluginAvailable('SplashScreen')) {
+        Plugins.SplashScreen.hide();
+      }
+
+
       this.platform.backButton.subscribeWithPriority(0, () => {
         navigator["app"].exitApp();
       });
