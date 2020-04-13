@@ -4,21 +4,18 @@ import { FormGroup, FormControl, Validators } from "@angular/forms";
 import { PlacesService } from "../../places.service";
 import { Router } from "@angular/router";
 import { LoadingController, ToastController } from "@ionic/angular";
-import { PlaceLocation } from '../../location.model';
+import { PlaceLocation } from "../../location.model";
 
 @Component({
   selector: "app-new-offer",
   templateUrl: "./new-offer.page.html",
-  styleUrls: ["./new-offer.page.scss"]
+  styleUrls: ["./new-offer.page.scss"],
 })
 export class NewOfferPage implements OnInit {
   // Self add Moment.js (Based on old Ionic doc, it's also their official way to transform Date stuffs in the web.)
   now: moment.Moment = moment();
   availableFrom: string = this.now.format("YYYY-MM-DD").toString();
-  availableTo: string = this.now
-    .add(1, "year")
-    .format("YYYY-MM-DD")
-    .toString();
+  availableTo: string = this.now.add(1, "year").format("YYYY-MM-DD").toString();
   form: FormGroup;
   constructor(
     private placesService: PlacesService,
@@ -32,35 +29,37 @@ export class NewOfferPage implements OnInit {
     this.form = new FormGroup({
       title: new FormControl(null, {
         updateOn: "blur", // You can determine when the form control sends valueChanged event, by using updateOn.
-        validators: [Validators.required]
+        validators: [Validators.required],
       }),
       description: new FormControl(null, {
         updateOn: "blur",
-        validators: [Validators.required, Validators.maxLength(180)]
+        validators: [Validators.required, Validators.maxLength(180)],
       }),
       price: new FormControl(null, {
         updateOn: "blur",
-        validators: [Validators.required, Validators.min(1)]
+        validators: [Validators.required, Validators.min(1)],
       }),
       dateFrom: new FormControl(null, {
         updateOn: "blur",
-        validators: [Validators.required]
+        validators: [Validators.required],
       }),
       dateTo: new FormControl(null, {
         updateOn: "blur",
-        validators: [Validators.required]
+        validators: [Validators.required],
       }),
       location: new FormControl(null, {
-        updateOn: 'blur',
-        validators: Validators.required
-      })
+        updateOn: "blur",
+        validators: Validators.required,
+      }),
     });
   }
 
   onLocationPicked(placeLocation: PlaceLocation) {
     // Pass the location value emitted from LocationPickerComponent to the FormControl
-    this.form.patchValue({location: placeLocation});
+    this.form.patchValue({ location: placeLocation });
   }
+
+  onImagePicked(imageBase64: string) {}
 
   async onCreateOffer() {
     if (!this.form.valid) {
@@ -74,25 +73,27 @@ export class NewOfferPage implements OnInit {
     console.log("new-offer.page.ts this.form.controls: ", this.form.controls);
     // Show Loading
     const loadingElement = await this.loadingController.create({
-      message: "Creating place...."
+      message: "Creating place....",
     });
     await loadingElement.present();
     // All form values are strings by default.
     // Hint: use + sign in front of the string value to convert into number automatically.
     // Now, because we only used tap() RxJS operator in PlacesService, now here we can get shared by it's Observable object.
-    this.placesService.addPlace(
-      this.form.value.title,
-      this.form.value.description,
-      +this.form.value.price,
-      new Date(this.form.value.dateFrom),
-      new Date(this.form.value.dateTo),
-      this.form.value.location,
-    ).subscribe(() => {
-      loadingElement.dismiss();
-      this.form.reset();
-      this.router.navigate(["/", "places", "offers"]);
-      this.showOfferCreatedMessage();
-    });
+    this.placesService
+      .addPlace(
+        this.form.value.title,
+        this.form.value.description,
+        +this.form.value.price,
+        new Date(this.form.value.dateFrom),
+        new Date(this.form.value.dateTo),
+        this.form.value.location
+      )
+      .subscribe(() => {
+        loadingElement.dismiss();
+        this.form.reset();
+        this.router.navigate(["/", "places", "offers"]);
+        this.showOfferCreatedMessage();
+      });
   }
 
   async showOfferCreatedMessage() {
@@ -104,9 +105,9 @@ export class NewOfferPage implements OnInit {
           side: "end",
           text: "Close",
           icon: "close-outline",
-          role: "cancel"
-        }
-      ]
+          role: "cancel",
+        },
+      ],
     });
     await toast.present();
   }
