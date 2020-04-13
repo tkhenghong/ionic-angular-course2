@@ -73,6 +73,7 @@ export class ImagePickerComponent implements OnInit {
     fr.readAsDataURL(pickedFile);
   }
 
+  // This section also uses Ionic Capacitor PWA. https://capacitor.ionicframework.com/docs/pwa-elements/
   onPickImage() {
     if (!Capacitor.isPluginAvailable("Camera")) {
       this.filePickerRef.nativeElement.click(); // Do what file picker normally does (Like select a file in the browser)
@@ -80,6 +81,7 @@ export class ImagePickerComponent implements OnInit {
       // If the device doesn't have Camera
       return;
     } else {
+      // When use with PWA, this will get executed, but with using webcam of your laptop to take photo.
       Plugins.Camera.getPhoto({
         quality: 50,
         source: CameraSource.Prompt, // Ask the user either pick photo from Gallery or create new photo using Camera
@@ -99,6 +101,7 @@ export class ImagePickerComponent implements OnInit {
           console.log(err);
           // this.showUnableGetPhotoAlert();
           if(this.usePicker) {
+            
             this.filePickerRef.nativeElement.click();
           }
           return false;
