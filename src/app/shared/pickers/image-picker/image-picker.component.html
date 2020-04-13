@@ -16,4 +16,5 @@
   </ion-button>
 </div>
 <!--Fallback to use file picker when cannot use Camera/Gallery-->
-<input type="file" *ngIf="usePicker" #filePicker (change)="onFileChosen($event)"/>
+<!--Tell the file picker to accept image/jpeg only-->
+<input type="file" accept="image/jpeg" *ngIf="usePicker" #filePicker (change)="onFileChosen($event)"/>

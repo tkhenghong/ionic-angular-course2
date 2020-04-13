@@ -29,7 +29,7 @@ export class ImagePickerComponent implements OnInit {
     HTMLInputElement
   >;
 
-  @Output() imagePick = new EventEmitter<string>();
+  @Output() imagePick = new EventEmitter<string | File>();
 
   constructor(
     private alertController: AlertController,
@@ -67,13 +67,14 @@ export class ImagePickerComponent implements OnInit {
     fr.onload = () => {
       const dataUrl = fr.result.toString();
       this.selectedImage = dataUrl;
+      this.imagePick.emit(pickedFile);
     };
 
     fr.readAsDataURL(pickedFile);
   }
 
   onPickImage() {
-    if (!Capacitor.isPluginAvailable("Camera") || this.usePicker) {
+    if (!Capacitor.isPluginAvailable("Camera")) {
       this.filePickerRef.nativeElement.click(); // Do what file picker normally does (Like select a file in the browser)
       // this.showUnableGetPhotoAlert(); // Commented. Using fallback option
       // If the device doesn't have Camera
@@ -96,7 +97,10 @@ export class ImagePickerComponent implements OnInit {
         })
         .catch((err) => {
           console.log(err);
-          this.showUnableGetPhotoAlert();
+          // this.showUnableGetPhotoAlert();
+          if(this.usePicker) {
+            this.filePickerRef.nativeElement.click();
+          }
           return false;
         });
     }
