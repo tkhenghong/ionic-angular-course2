@@ -1,11 +1,18 @@
 import { Component, OnInit, Output, EventEmitter } from "@angular/core";
-import { ModalController } from "@ionic/angular";
+import {
+  ModalController,
+  ActionSheetController,
+  AlertController,
+} from "@ionic/angular";
 import { MapModalComponent } from "../../map-modal/map-modal.component";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "../../../../environments/environment";
 import { map, switchMap, tap } from "rxjs/operators";
-import { PlaceLocation } from "src/app/places/location.model";
+import { PlaceLocation, Coordinates } from "src/app/places/location.model";
 import { of } from "rxjs";
+
+// Bring Capacitor Native API Functions
+import { Plugins, Capacitor } from "@capacitor/core";
 
 @Component({
   selector: "app-location-picker",
@@ -25,12 +32,40 @@ export class LocationPickerComponent implements OnInit {
 
   constructor(
     private modalController: ModalController,
-    private httpClient: HttpClient
+    private httpClient: HttpClient,
+    private actionSheetController: ActionSheetController,
+    private alertController: AlertController
   ) {}
 
   ngOnInit() {}
 
   async onPickLocation() {
+    const actionSheetEl = await this.actionSheetController.create({
+      header: "Please Choose: ",
+      buttons: [
+        {
+          text: "Auto-locate",
+          handler: () => {
+            this.locateUser();
+          },
+        },
+        {
+          text: "Pick on Map",
+          handler: () => {
+            this.openMap();
+          },
+        },
+        {
+          text: "Cancel",
+          role: "cancel",
+        },
+      ],
+    });
+
+    await actionSheetEl.present();
+  }
+
+  private async openMap() {
     const modelEl = await this.modalController.create({
       component: MapModalComponent,
     });
@@ -42,15 +77,24 @@ export class LocationPickerComponent implements OnInit {
       if (!modalData || !modalData.data) {
         return;
       }
-      const pickedLocation: PlaceLocation = {
+      const coordinates: Coordinates = {
         lat: modalData.data.lat,
         lng: modalData.data.lng,
-        address: null,
-        staticMapImageUrl: null,
-      };
-      this.isLoading = true;
+      }
+      this.createPlace(coordinates.lat, coordinates.lng);
+    });
+  }
 
-      this.getAddress(modalData.data.lat, modalData.data.lng)
+  private createPlace(lat: number, lng: number) {
+    const pickedLocation: PlaceLocation = {
+      lat,
+      lng,
+      address: null,
+      staticMapImageUrl: null,
+    };
+    this.isLoading = true;
+
+      this.getAddress(lat, lng)
         .pipe(
           tap((address) => {
             console.log("location-picker.component.ts address: ", address);
@@ -77,7 +121,42 @@ export class LocationPickerComponent implements OnInit {
           // Emit the value out of this component
           this.locationPick.emit(pickedLocation);
         });
+  }
+
+  private locateUser() {
+    if (!Capacitor.isPluginAvailable("Geolocation")) {
+      this.showUnableToLocationUserAlert();
+      return;
+    } else {
+      this.isLoading = true
+      Plugins.Geolocation.getCurrentPosition()
+        .then(geoPosition => {
+          const coordinates: Coordinates = {
+            lat: geoPosition.coords.latitude,
+            lng: geoPosition.coords.longitude,
+          };
+          this.createPlace(coordinates.lat, coordinates.lng);
+          this.isLoading = false;
+        })
+        .catch((err) => {
+          this.isLoading = false;
+          this.showUnableToLocationUserAlert();
+        });
+    }
+  }
+
+  private async showUnableToLocationUserAlert() {
+    const alertEl = await this.alertController.create({
+      header: "Could not fetch location",
+      message: "Please use the map to pick a location!",
+      buttons: [
+        {
+          text: 'Okay',
+          role: 'cancel',
+        }
+      ]
     });
+    await alertEl.present();
   }
 
   // Convert longitude and latitude to address in string (Google Geocoding API)
