@@ -5,6 +5,7 @@ import { PlacesService } from "../../places.service";
 import { Router } from "@angular/router";
 import { LoadingController, ToastController } from "@ionic/angular";
 import { PlaceLocation } from "../../location.model";
+import { switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-new-offer",
@@ -103,19 +104,25 @@ export class NewOfferPage implements OnInit {
       message: "Creating place....",
     });
     await loadingElement.present();
-    // All form values are strings by default.
-    // Hint: use + sign in front of the string value to convert into number automatically.
-    // Now, because we only used tap() RxJS operator in PlacesService, now here we can get shared by it's Observable object.
+
+    // Upload the image to the server first.
     this.placesService
-      .addPlace(
-        this.form.value.title,
-        this.form.value.description,
-        +this.form.value.price,
-        new Date(this.form.value.dateFrom),
-        new Date(this.form.value.dateTo),
-        this.form.value.location
-      )
-      .subscribe(() => {
+      .uploadImage(this.form.get("image").value)
+      .pipe(switchMap(uploadRes => {
+        // All form values are strings by default.
+        // Hint: use + sign in front of the string value to convert into number automatically.
+        // Now, because we only used tap() RxJS operator in PlacesService, now here we can get shared by it's Observable object.
+        return this.placesService
+          .addPlace(
+            this.form.value.title,
+            this.form.value.description,
+            +this.form.value.price,
+            new Date(this.form.value.dateFrom),
+            new Date(this.form.value.dateTo),
+            this.form.value.location,
+            uploadRes.imageUrl
+          );
+      })).subscribe(() => {
         loadingElement.dismiss();
         this.form.reset();
         this.router.navigate(["/", "places", "offers"]);

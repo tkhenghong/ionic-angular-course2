@@ -127,7 +127,8 @@ export class PlacesService {
     price: number,
     dateFrom: Date,
     dateTo: Date,
-    placeLocation: PlaceLocation
+    placeLocation: PlaceLocation,
+    imageUrl: string
   ) {
     let generatedId: string;
 
@@ -135,12 +136,12 @@ export class PlacesService {
       Math.random().toString(),
       title,
       description,
-      "https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg",
+      imageUrl,
       price,
       dateFrom,
       dateTo,
       this.authService.userId,
-      placeLocation
+      placeLocation,
     );
     // Save to the database.
     return this.httpClient
@@ -225,6 +226,23 @@ export class PlacesService {
       tap(() => {
         this._places.next(updatedPlaces);
       })
+    );
+  }
+
+  uploadImage(image: File) {
+    const uploadData = new FormData(); // JavaScript stuffs
+    uploadData.append("image", image);
+    // AFTER setup Firebase Storage,
+    // installed Firebase Tools CLI into your computer,
+    // init and install Firebase Functions into your project,
+    // edit the index.js file and
+    // deploy the code to Cloud,
+    // you need to go Firebase Console > Functions.
+    // There you'll see a uploaded function there and an URL is generated for you.
+    // Get that function and paste it here.
+    return this.httpClient.post<{imageUrl: string, imagePath: string}>(
+      "https://us-central1-ionic-angular-course-e937d.cloudfunctions.net/storeImage",
+      uploadData
     );
   }
 }
