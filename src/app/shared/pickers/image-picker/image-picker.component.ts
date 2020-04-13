@@ -6,6 +6,9 @@ import {
   CameraResultType,
 } from "@capacitor/core";
 import { AlertController } from "@ionic/angular";
+
+import { environment } from "../../../../environments/environment";
+
 @Component({
   selector: "app-image-picker",
   templateUrl: "./image-picker.component.html",
@@ -30,8 +33,8 @@ export class ImagePickerComponent implements OnInit {
         quality: 50,
         source: CameraSource.Prompt, // Ask the user either pick photo from Gallery or create new photo using Camera
         correctOrientation: true, // Make sure orientation of the camera is automatically fixed
-        height: 320, // The larger the resolution, the harder it is to be uploaded to the web DB
-        width: 200,
+        height: environment.photoHeight, // The larger the resolution, the harder it is to be uploaded to the web DB
+        width: environment.photoWidth,
         resultType: CameraResultType.Base64, // return as a string which can be encoded into a file or whatever
       })
         .then((image) => {

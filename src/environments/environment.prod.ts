@@ -5,4 +5,6 @@ export const environment = {
   satelliteImageWidth: 500,
   satelliteImageHeight: 300,
   satelliteImageZoom: 14,
+  photoHeight: 800,
+  photoWidth: 600,
 };
