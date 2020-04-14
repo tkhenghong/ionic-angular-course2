@@ -1,7 +1,7 @@
 import { Injectable } from "@angular/core";
 import { Router, CanActivate, ActivatedRouteSnapshot } from "@angular/router";
 import { AuthService } from "./auth.service";
-import { Observable } from "rxjs";
+import { Observable, of } from "rxjs";
 import { switchMap, tap, take } from "rxjs/operators";
 
 // Build a guard to prevent other users access to places and bookings pages
@@ -54,6 +54,16 @@ export class AuthGuard implements CanActivate {
     console.log("guard!");
 
     return this.authService.userIsAuthenticated.pipe(
+      take(1),
+      switchMap(isAuthenticated => {
+        if(!isAuthenticated) {
+          // try auto login, this is for 1st time when open the app
+          return this.authService.autoLogin();
+        } else {
+          // continue
+          return of(isAuthenticated);
+        }
+      }),
       tap((isAuthenticated) => {
         if (!isAuthenticated) {
           this.router.navigateByUrl("/auth");
