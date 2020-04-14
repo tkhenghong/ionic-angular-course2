@@ -54,6 +54,7 @@ export class AuthGuard implements CanActivate {
       this.router.navigateByUrl("/auth");
       return false;
     }
+    // DO NOT this.router.navigateByUrl(...) here(outside the if function), it will route and trigger this method continuously, causing infinite loop
     // Block the navigation
     return true;
   }
