@@ -13,4 +13,15 @@ export class User {
       return this._token;
     }
   }
+
+  get tokenDuration() {
+    if (!this._token) {
+      return 0;
+    }
+
+    // Test expired
+    // return 2000; // 2 seconds
+    // If less than or equal to 0 means expired
+    return this.tokenExpirationDate.getTime() - new Date().getTime();
+  }
 }

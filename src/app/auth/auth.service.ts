@@ -1,4 +1,4 @@
-import { Injectable } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "src/environments/environment";
 import { BehaviorSubject, from } from "rxjs";
@@ -25,11 +25,13 @@ export interface AuthStorageToken {
 @Injectable({
   providedIn: "root",
 })
-export class AuthService {
+export class AuthService implements OnDestroy {
   private _user = new BehaviorSubject<User>(null);
 
   private signUpApiURL: string = environment.signUpApiURL;
   private signInApiURL: string = environment.signInApiURL;
+
+  private activeLogoutTimer: any;
 
   public get currentUserValue(): User {
     return this._user.value;
@@ -57,6 +59,10 @@ export class AuthService {
 
   constructor(private httpClient: HttpClient) {}
 
+  ngOnDestroy() {
+    this.cleanupActiveLogoutTimer();
+  }
+
   login(email: string, password: string) {
     return this.httpClient
       .post<AuthResponseData>(this.signInApiURL, {
@@ -68,6 +74,7 @@ export class AuthService {
   }
 
   logout() {
+    this.cleanupActiveLogoutTimer();
     this._user.next(null);
     Plugins.Storage.remove({ key: "authData" });
   }
@@ -78,15 +85,15 @@ export class AuthService {
     const expirationTime = new Date(
       new Date().getTime() + +userData.expiresIn * 1000
     );
-    this._user.next(
-      new User(
-        userData.localId,
-        userData.email,
-        userData.idToken,
-        expirationTime
-      )
+    const user = new User(
+      userData.localId,
+      userData.email,
+      userData.idToken,
+      expirationTime
     );
 
+    this._user.next(user);
+    this.autoLogout(user.tokenDuration);
     this.storeAuthData(
       userData.localId,
       userData.idToken,
@@ -154,6 +161,7 @@ export class AuthService {
         if (user) {
           // Set the user
           this._user.next(user);
+          this.autoLogout(user.tokenDuration);
         }
       }),
       map((user) => {
@@ -161,5 +169,20 @@ export class AuthService {
         return !!user;
       })
     );
+  }
+
+  // Implement this to auto kick user out of the system if token is expired
+  private autoLogout(duration: number) {
+    this.cleanupActiveLogoutTimer();
+    this.activeLogoutTimer = setTimeout(() => {
+      this.logout();
+    }, duration);
+  }
+
+  // Clear timer to prevent memory leaks(Good practice)
+  private cleanupActiveLogoutTimer() {
+    if (this.activeLogoutTimer) {
+      clearTimeout(this.activeLogoutTimer);
+    }
   }
 }
