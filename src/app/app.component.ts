@@ -6,8 +6,10 @@ import { StatusBar } from "@ionic-native/status-bar/ngx";
 import { AuthService } from "./auth/auth.service";
 import { Router } from "@angular/router";
 
-import { Plugins, Capacitor } from "@capacitor/core";
+import { Plugins, Capacitor, AppState } from "@capacitor/core";
 import { Subscription } from "rxjs";
+import { take } from "rxjs/operators";
+import { PluginListenerHandle } from "@capacitor/core/dist/esm/web/network";
 
 @Component({
   selector: "app-root",
@@ -17,12 +19,12 @@ import { Subscription } from "rxjs";
 export class AppComponent implements OnInit, OnDestroy {
   private authSubscription: Subscription;
   private previousAuthState = false;
+  private capacitorAppPluginListener: PluginListenerHandle;
 
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-
     private authService: AuthService,
     private router: Router
   ) {
@@ -40,11 +42,24 @@ export class AppComponent implements OnInit, OnDestroy {
         this.previousAuthState = isAuth;
       }
     );
+
+    // Use Capacitor App plugin to determine app's state
+    // https://capacitor.ionicframework.com/docs/apis/app/
+    this.capacitorAppPluginListener = Plugins.App.addListener(
+      "appStateChange",
+      this.checkAuthOnResume.bind(this)
+    );
   }
 
   ngOnDestroy() {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
+    }
+
+    // Commented due to problem of unable to find removeListener() in latest Ionic
+    // Plugins.App.removeListener('appStateChange', this.checkAuthOnResume);
+    if (this.capacitorAppPluginListener) {
+      this.capacitorAppPluginListener.remove();
     }
   }
 
@@ -71,5 +86,19 @@ export class AppComponent implements OnInit, OnDestroy {
   onLogout() {
     this.authService.logout();
     this.router.navigateByUrl("/auth");
+  }
+
+  // Check the token by using autoLogin() method in AuthService
+  private checkAuthOnResume(state: AppState) {
+    if (state.isActive) {
+      this.authService
+        .autoLogin()
+        .pipe(take(1))
+        .subscribe((success) => {
+          if (!success) {
+            this.onLogout();
+          }
+        });
+    }
   }
 }
