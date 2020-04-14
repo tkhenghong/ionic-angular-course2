@@ -8,6 +8,7 @@ This project also uses Firebase Tools in order to upload photos to Firebase Stor
 Setup Firebase Tool CLI URL: https://firebase.google.com/docs/cli
 Learn how to use Firebase Cloud functions, starting point: https://firebase.google.com/docs/functions/?authuser=0#implementation_paths
 
+From now on, to access DB and upload/download image from Firebase needs token.
 Firebase Database Rule: 
 {
   "rules": {
@@ -15,6 +16,16 @@ Firebase Database Rule:
     ".write": "auth != null",
     "bookings":{
       ".indexOn": ["userId"]
+    }
+  }
+}
+
+Firebase Storage Rule: 
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
     }
   }
 }

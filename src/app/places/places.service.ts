@@ -30,6 +30,7 @@ export class PlacesService {
   private databaseURL: string = environment.databaseURL;
   private databaseName: string = "offered-places";
   private endURL: string = ".json";
+  private uploadImageUrl: string = environment.uploadImageURL;
 
   // Inject AuthService to this service to bring the current logged in userId into object creation. Brilliant!
   constructor(
@@ -48,73 +49,70 @@ export class PlacesService {
     // https://ionic-angular-course-e937d.firebaseio.com -- Original URL of the Database
     // https://ionic-angular-course-e937d.firebaseio.com/NAMEOFTHEDATABASE.json -- Original URL + the name of the database. (It will auto create the database if it's not created yet.)
     // If you got any object properties that you not sure or don't know it will return, you can put
-    return this.httpClient
-      .get<{ [key: string]: PlaceData }>(
-        `${this.databaseURL}/${this.databaseName}${this.endURL}`
-      )
-      .pipe(
-        tap((resData) => {
-          console.log("places.service.ts resData: ", resData);
-        }),
-        map((resData) => {
-          const places = [];
-          for (const key in resData) {
-            // Check the key value from the list of response data objects return from Firebase is exist or not
-            // if (resData.hasOwnProperty(key)) is a recommended practice
-            if (resData.hasOwnProperty(key)) {
-              places.push(
-                new Place(
-                  key,
-                  resData[key].title,
-                  resData[key].description,
-                  resData[key].imageUrl,
-                  resData[key].price,
-                  new Date(resData[key].availableFrom),
-                  new Date(resData[key].availableTo),
-                  resData[key].userId,
-                  resData[key].location
-                )
-              );
-            }
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.httpClient.get<{ [key: string]: PlaceData }>(
+          `${this.databaseURL}/${this.databaseName}${this.endURL}?auth=${token}`
+        );
+      }),
+      tap((resData) => {
+        console.log("places.service.ts resData: ", resData);
+      }),
+      map((resData) => {
+        const places = [];
+        for (const key in resData) {
+          // Check the key value from the list of response data objects return from Firebase is exist or not
+          // if (resData.hasOwnProperty(key)) is a recommended practice
+          if (resData.hasOwnProperty(key)) {
+            places.push(
+              new Place(
+                key,
+                resData[key].title,
+                resData[key].description,
+                resData[key].imageUrl,
+                resData[key].price,
+                new Date(resData[key].availableFrom),
+                new Date(resData[key].availableTo),
+                resData[key].userId,
+                resData[key].location
+              )
+            );
           }
+        }
 
-          return places;
-        }),
-        tap((places) => {
-          this._places.next(places);
-        })
-      );
+        return places;
+      }),
+      tap((places) => {
+        this._places.next(places);
+      })
+    );
   }
 
   // Return the one place but still an Observable
   getPlace(id: string) {
-    return this.httpClient
-      .get<Place>(
-        `${this.databaseURL}/${this.databaseName}/${id}${this.endURL}`
-      )
-      .pipe(
-        tap((resData) => {
-          console.log("places.service.ts This one? resData: ", resData);
-        }),
-        map((placeData) => {
-          return new Place(
-            id,
-            placeData.title,
-            placeData.description,
-            placeData.imageUrl,
-            placeData.price,
-            new Date(placeData.availableFrom),
-            new Date(placeData.availableTo),
-            placeData.userId,
-            placeData.location
-          );
-        })
-      );
-    // return { ...this._places.find(p => p.id === id) };
-    return this._places.pipe(
+    return this.authService.token.pipe(
       take(1),
-      map((places) => {
-        return { ...places.find((p) => p.id === id) };
+      switchMap((token) => {
+        return this.httpClient.get<Place>(
+          `${this.databaseURL}/${this.databaseName}/${id}${this.endURL}?auth=${token}`
+        );
+      }),
+      tap((resData) => {
+        console.log("places.service.ts This one? resData: ", resData);
+      }),
+      map((placeData) => {
+        return new Place(
+          id,
+          placeData.title,
+          placeData.description,
+          placeData.imageUrl,
+          placeData.price,
+          new Date(placeData.availableFrom),
+          new Date(placeData.availableTo),
+          placeData.userId,
+          placeData.location
+        );
       })
     );
   }
@@ -131,45 +129,50 @@ export class PlacesService {
     imageUrl: string
   ) {
     let generatedId: string;
+    let fetchUserId: string;
     let newPlace: Place;
     // More complex Observable chain
-    return this.authService.userId
-      .pipe(
-        take(1),
-        switchMap(userId => {
-          if (!userId) {
-            throw new Error();
-          }
+    return this.authService.userId.pipe(
+      take(1),
+      switchMap((userId) => {
+        fetchUserId = userId;
+        return this.authService.token;
+      }),
+      take(1),
+      switchMap((token) => {
+        if (!fetchUserId) {
+          throw new Error();
+        }
 
-          newPlace = new Place(
-            Math.random().toString(),
-            title,
-            description,
-            imageUrl,
-            price,
-            dateFrom,
-            dateTo,
-            userId,
-            placeLocation
-          );
-          // Save to the database.
-          return this.httpClient.post<{ name: string }>(
-            `${this.databaseURL}/${this.databaseName}${this.endURL}`,
-            { ...newPlace, id: null }
-          );
-        }),
-        switchMap(resData => {
-          // Firebase have auto generated ID back to you
-          generatedId = resData.name;
-          return this.places; // Not yet go back to the caller.
-        }),
-        take(1),
-        tap(places => {
-          // Add the newPlace into the current list of Places
-          newPlace.id = generatedId;
-          this._places.next(places.concat(newPlace));
-        })
-      );
+        newPlace = new Place(
+          Math.random().toString(),
+          title,
+          description,
+          imageUrl,
+          price,
+          dateFrom,
+          dateTo,
+          fetchUserId,
+          placeLocation
+        );
+        // Save to the database.
+        return this.httpClient.post<{ name: string }>(
+          `${this.databaseURL}/${this.databaseName}${this.endURL}?auth=${token}`,
+          { ...newPlace, id: null }
+        );
+      }),
+      switchMap((resData) => {
+        // Firebase have auto generated ID back to you
+        generatedId = resData.name;
+        return this.places; // Not yet go back to the caller.
+      }),
+      take(1),
+      tap((places) => {
+        // Add the newPlace into the current list of Places
+        newPlace.id = generatedId;
+        this._places.next(places.concat(newPlace));
+      })
+    );
 
     // Add something into BehaviourSubject object
     // Changed from subscribe() to get the data to use tap.
@@ -197,9 +200,18 @@ export class PlacesService {
     dateTo: Date
   ) {
     let updatedPlaces: Place[];
-    return this._places.pipe(
+    let fetchedToken: string;
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        fetchedToken = token;
+        return this._places;
+      }),
       take(1),
       switchMap((places) => {
+        if (!fetchedToken) {
+          return;
+        }
         // If we are trying to edit the place but the Place[] are not initialized yet
         if (!places || places.length <= 0) {
           return this.fetchPlaces(); // Fetch the places now
@@ -224,7 +236,7 @@ export class PlacesService {
         );
         // Edit place using HTTP request
         return this.httpClient.put(
-          `${this.databaseURL}/${this.databaseName}/${id}${this.endURL}`,
+          `${this.databaseURL}/${this.databaseName}/${id}${this.endURL}?auth${fetchedToken}`,
           {
             ...updatedPlaces[updatedPlaceIndex],
             id: null,
@@ -248,41 +260,20 @@ export class PlacesService {
     // you need to go Firebase Console > Functions.
     // There you'll see a uploaded function there and an URL is generated for you.
     // Get that function and paste it here.
-    return this.httpClient.post<{ imageUrl: string; imagePath: string }>(
-      "https://us-central1-ionic-angular-course-e937d.cloudfunctions.net/storeImage",
-      uploadData
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        // ?auth=${token}
+        return this.httpClient.post<{ imageUrl: string; imagePath: string }>(
+          this.uploadImageUrl,
+          uploadData,
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            },
+          }
+        );
+      })
     );
   }
 }
-
-// Old sample data, Places[]:
-// new Place(
-//   "p1",
-//   "Manhattan Mansion",
-//   "In the heart of New York City.",
-//   "https://lonelyplanetimages.imgix.net/mastheads/GettyImages-538096543_medium.jpg?sharp=10&vib=20&w=1200",
-//   149.99,
-//   new Date("2020-01-01"),
-//   new Date("2020-12-31"),
-//   "abc"
-// ),
-// new Place(
-//   "p2",
-//   "L' Amour Toujours",
-//   "A romantic place in Paris!",
-//   "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Paris_Night.jpg/1024px-Paris_Night.jpg",
-//   189.99,
-//   new Date("2020-01-01"),
-//   new Date("2020-12-31"),
-//   "abc"
-// ),
-// new Place(
-//   "p3",
-//   "The Foggy Palace",
-//   "Not your average city trip!",
-//   "https://upload.wikimedia.org/wikipedia/commons/0/01/San_Francisco_with_two_bridges_and_the_fog.jpg",
-//   99.99,
-//   new Date("2020-01-01"),
-//   new Date("2020-12-31"),
-//   "abc"
-// ),

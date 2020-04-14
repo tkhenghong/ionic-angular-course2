@@ -40,15 +40,22 @@ export class BookingsService {
   }
 
   fetchBookings() {
+    let fetchedUserId: string;
     return this.authService.userId.pipe(
-      take(1), // Important *** Always remember this, otherwise it will cause an error like couldn't get userId error (because userId is null in Subscription) 
+      take(1), // Important *** Always remember this, otherwise it will cause an error like couldn't get userId error (because userId is null in Subscription)
       switchMap((userId) => {
+        fetchedUserId = userId;
         console.log("bookings.service.ts userId: ", userId);
         if (!userId) {
           throw new Error("User not found!");
         }
+
+        return this.authService.token;
+      }),
+      take(1),
+      switchMap((token) => {
         return this.httpClient.get<{ [key: string]: BookingData }>(
-          `${this.databaseURL}/${this.databaseName}${this.endURL}?orderBy="userId"&equalTo="${userId}"`
+          `${this.databaseURL}/${this.databaseName}${this.endURL}?orderBy="userId"&equalTo="${fetchedUserId}"&auth=${token}`
         );
       }),
       map((bookingData) => {
@@ -93,17 +100,22 @@ export class BookingsService {
     // Multiple observable chain with switchMaps in pipe()
     let generatedId: string;
     let newBooking: Booking;
+    let fetchedUserId: string;
     return this.authService.userId.pipe(
       take(1),
       switchMap((userId) => {
         if (!userId) {
           throw new Error("No user ID found!");
         }
-
+        fetchedUserId = userId;
+        return this.authService.token;
+      }),
+      take(1),
+      switchMap((token) => {
         newBooking = new Booking(
           Math.random().toString(),
           placeId,
-          userId,
+          fetchedUserId,
           placeTitle,
           placeImage,
           firstName,
@@ -114,7 +126,7 @@ export class BookingsService {
         );
 
         return this.httpClient.post<{ name: string }>(
-          `${this.databaseURL}/${this.databaseName}${this.endURL}`,
+          `${this.databaseURL}/${this.databaseName}${this.endURL}?auth=${token}`,
           { ...newBooking, id: null }
         );
       }),
@@ -131,27 +143,21 @@ export class BookingsService {
   }
 
   cancelBooking(bookingId: string) {
-    return this.httpClient
-      .delete(
-        `${this.databaseURL}/${this.databaseName}/${bookingId}${this.endURL}`
-      )
-      .pipe(
-        switchMap(() => {
-          return this.bookings;
-        }),
-        take(1),
-        tap((bookings) => {
-          this._bookings.next(bookings.filter((b) => b.id !== bookingId));
-        })
-      );
-    // Use same RxJS operators to get one, fake loading, get the bookings and filter out the unwanted booking.
-    // return this.bookings.pipe(
-    //   take(1),
-    //   delay(1000),
-    //   tap((bookings) => {
-    //     this._bookings.next(bookings.filter((b) => b.id !== bookingId));
-    //   })
-    // );
+    return this.authService.token.pipe(
+      take(1),
+      switchMap((token) => {
+        return this.httpClient.delete(
+          `${this.databaseURL}/${this.databaseName}/${bookingId}${this.endURL}?auth=${token}`
+        );
+      }),
+      switchMap(() => {
+        return this.bookings;
+      }),
+      take(1),
+      tap((bookings) => {
+        this._bookings.next(bookings.filter((b) => b.id !== bookingId));
+      })
+    );
   }
 
   constructor(
