@@ -41,7 +41,7 @@ export class BookingsService {
 
   fetchBookings() {
     return this.authService.userId.pipe(
-      take(1), // Important ***
+      take(1), // Important *** Always remember this, otherwise it will cause an error like couldn't get userId error (because userId is null in Subscription) 
       switchMap((userId) => {
         console.log("bookings.service.ts userId: ", userId);
         if (!userId) {
