@@ -46,10 +46,6 @@ export class AuthService {
     );
   }
 
-  public isUserAuthenticated() {
-    return this._user.value;
-  }
-
   get userId() {
     return this._user.asObservable().pipe(
       map((user) => {

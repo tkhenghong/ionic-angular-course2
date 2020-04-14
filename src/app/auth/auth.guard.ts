@@ -1,6 +1,8 @@
 import { Injectable } from "@angular/core";
 import { Router, CanActivate, ActivatedRouteSnapshot } from "@angular/router";
 import { AuthService } from "./auth.service";
+import { Observable } from "rxjs";
+import { switchMap, tap, take } from "rxjs/operators";
 
 // Build a guard to prevent other users access to places and bookings pages
 // Attach this guard into app.routing.module.ts file. Go see that file.
@@ -48,14 +50,21 @@ export class AuthGuard implements CanActivate {
 
   // https://medium.com/@ryanchenkie_40935/angular-authentication-using-route-guards-bf7a4ca13ae3
   // Latest Auth guard with Observable: https://www.freakyjolly.com/angular-7-6-use-auth-guards-canactivate-and-resolve-in-angular-routing-quick-example/
-  canActivate(): boolean {
+  canActivate(): boolean | Observable<boolean> {
     console.log("guard!");
-    if (!this.authService.isUserAuthenticated()) {
-      this.router.navigateByUrl("/auth");
-      return false;
-    }
-    // DO NOT this.router.navigateByUrl(...) here(outside the if function), it will route and trigger this method continuously, causing infinite loop
-    // Block the navigation
-    return true;
+
+    return this.authService.userIsAuthenticated.pipe(
+      tap((isAuthenticated) => {
+        if (!isAuthenticated) {
+          this.router.navigateByUrl("/auth");
+          return false;
+        }
+
+        // DO NOT this.router.navigateByUrl(...) here(outside the if function), it will route and trigger this method continuously, causing infinite loop.
+
+        // Block the navigation
+        return true;
+      })
+    );
   }
 }
