@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "src/environments/environment";
 
-interface AuthResponseData {
+export interface AuthResponseData {
   idToken: string;
   email: string;
   refreshToken: string; // Give us a token that will be used to refresh the token. By default the idToken will expire in 1 hour.
@@ -19,6 +19,7 @@ export class AuthService {
   private _userId = null;
 
   private signUpApiURL: string = environment.signUpApiURL;
+  private signInApiURL: string = environment.signInApiURL;
 
   get userIsAuthenticated() {
     return this._userIsAuthenticated;
@@ -30,8 +31,13 @@ export class AuthService {
 
   constructor(private httpClient: HttpClient) {}
 
-  login() {
-    this._userIsAuthenticated = true;
+  login(email: string, password: string) {
+    // this._userIsAuthenticated = true;
+    return this.httpClient.post<AuthResponseData>(this.signInApiURL, {
+      email,
+      password,
+      returnSecureToken: true,
+    });
   }
 
   logout() {

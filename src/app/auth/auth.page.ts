@@ -1,8 +1,9 @@
 import { Component, OnInit } from "@angular/core";
-import { AuthService } from "./auth.service";
+import { AuthService, AuthResponseData } from "./auth.service";
 import { Router } from "@angular/router";
 import { LoadingController, AlertController } from "@ionic/angular";
 import { NgForm } from "@angular/forms";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-auth",
@@ -23,14 +24,22 @@ export class AuthPage implements OnInit {
 
   async authenticate(email: string, password: string) {
     this.isLoading = true;
-    this.authService.login(); // Authenticate
     // Use LoadingController
     const loadingElement = await this.loadingController.create({
       keyboardClose: true,
       message: "Logging in...",
     });
     await loadingElement.present();
-    this.authService.signUp(email, password).subscribe(
+    let authObservable: Observable<AuthResponseData>;
+
+    if (this.isLogin) {
+      authObservable = this.authService.login(email, password); // Authenticate
+    } else {
+      authObservable = this.authService.signUp(email, password); // Sign Up
+    }
+
+    // Read subscription from their similar Observable response
+    authObservable.subscribe(
       (resData) => {
         console.log("auth.page.ts resData: ", resData);
         // Problem: the use still can go back to the Login page after login. (Both iOS and Android)
@@ -46,10 +55,20 @@ export class AuthPage implements OnInit {
         // You can catch error of the sign up like this
         console.log("auth.page.ts err: ", err);
         const errMessage = err.error.error.message;
-        let message: string = "Could not sign you up. Please try again.";
+        let message: string;
 
-        if (errMessage === "EMAIL_EXISTS") {
-          message = "This email address already exists!";
+        switch (errMessage) {
+          case "EMAIL_EXISTS":
+            message = "This email address already exists!";
+            break;
+          case "EMAIL_NOT_FOUND":
+            message = "Email address could not be found.";
+            break;
+          case "INVALID_PASSWORD":
+            message = "This password is not correct.";
+            break;
+          default:
+            message = "Could not sign you up. Please try again.";
         }
 
         this.showAlert(message);

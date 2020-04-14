@@ -7,5 +7,6 @@ export const environment = {
   satelliteImageZoom: 14,
   photoHeight: 800,
   photoWidth: 600,
-  signUpApiURL: 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAIgSXeSLo8zNkS5Qko6cPVP0SELR0AZYU'
+  signUpApiURL: 'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyAIgSXeSLo8zNkS5Qko6cPVP0SELR0AZYU',
+  signInApiURL: 'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyAIgSXeSLo8zNkS5Qko6cPVP0SELR0AZYU'
 };
