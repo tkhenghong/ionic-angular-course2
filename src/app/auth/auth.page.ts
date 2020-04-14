@@ -93,6 +93,7 @@ export class AuthPage implements OnInit {
     console.log("auth.page.ts password: ", password);
 
     this.authenticate(email, password);
+    f.reset();
   }
 
   onSwitchAuthMode() {

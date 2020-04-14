@@ -41,6 +41,7 @@ export class BookingsService {
 
   fetchBookings() {
     return this.authService.userId.pipe(
+      take(1), // Important ***
       switchMap((userId) => {
         console.log("bookings.service.ts userId: ", userId);
         if (!userId) {

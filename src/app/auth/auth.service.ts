@@ -69,6 +69,7 @@ export class AuthService {
 
   logout() {
     this._user.next(null);
+    Plugins.Storage.remove({ key: "authData" });
   }
 
   private setUserData(userData: AuthResponseData) {
@@ -149,13 +150,13 @@ export class AuthService {
         );
         return user;
       }),
-      tap(user => {
-        if(user) {
+      tap((user) => {
+        if (user) {
           // Set the user
           this._user.next(user);
         }
       }),
-      map(user => {
+      map((user) => {
         // convert object to boolean
         return !!user;
       })
