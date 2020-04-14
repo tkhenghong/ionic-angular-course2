@@ -4,6 +4,7 @@ import { Place } from "../place.model";
 import { MenuController } from "@ionic/angular";
 import { Subscription } from "rxjs";
 import { AuthService } from "src/app/auth/auth.service";
+import { take } from "rxjs/operators";
 
 @Component({
   selector: "app-discover",
@@ -56,18 +57,20 @@ export class DiscoverPage implements OnInit, OnDestroy {
 
   // CustomEvent is not in Ionic 5. (Not in Official documentation)
   onFilterUpdate(event: any) {
-    console.log("discover.page.ts event.detail: ", event.detail);
-    if (event.detail.value === "all") {
-      // All places
-      this.relevantPlaces = this.loadedPlaces;
-      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
-    } else {
-      // Bookable places
-      // Filter out the Places that is not created by you
-      this.relevantPlaces = this.loadedPlaces.filter(
-        (place) => place.userId !== this.authService.userId
-      );
-      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
-    }
+    this.authService.userId.pipe(take(1)).subscribe((userId) => {
+      console.log("discover.page.ts event.detail: ", event.detail);
+      if (event.detail.value === "all") {
+        // All places
+        this.relevantPlaces = this.loadedPlaces;
+        this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+      } else {
+        // Bookable places
+        // Filter out the Places that is not created by you
+        this.relevantPlaces = this.loadedPlaces.filter(
+          (place) => place.userId !== userId
+        );
+        this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+      }
+    });
   }
 }

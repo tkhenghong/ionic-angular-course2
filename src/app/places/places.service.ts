@@ -131,32 +131,40 @@ export class PlacesService {
     imageUrl: string
   ) {
     let generatedId: string;
-
-    const newPlace = new Place(
-      Math.random().toString(),
-      title,
-      description,
-      imageUrl,
-      price,
-      dateFrom,
-      dateTo,
-      this.authService.userId,
-      placeLocation,
-    );
-    // Save to the database.
-    return this.httpClient
-      .post<{ name: string }>(
-        `${this.databaseURL}/${this.databaseName}${this.endURL}`,
-        { ...newPlace, id: null }
-      )
+    let newPlace: Place;
+    // More complex Observable chain
+    return this.authService.userId
       .pipe(
-        switchMap((resData) => {
+        take(1),
+        switchMap(userId => {
+          if (!userId) {
+            throw new Error();
+          }
+
+          newPlace = new Place(
+            Math.random().toString(),
+            title,
+            description,
+            imageUrl,
+            price,
+            dateFrom,
+            dateTo,
+            userId,
+            placeLocation
+          );
+          // Save to the database.
+          return this.httpClient.post<{ name: string }>(
+            `${this.databaseURL}/${this.databaseName}${this.endURL}`,
+            { ...newPlace, id: null }
+          );
+        }),
+        switchMap(resData => {
           // Firebase have auto generated ID back to you
           generatedId = resData.name;
           return this.places; // Not yet go back to the caller.
         }),
         take(1),
-        tap((places) => {
+        tap(places => {
           // Add the newPlace into the current list of Places
           newPlace.id = generatedId;
           this._places.next(places.concat(newPlace));
@@ -240,7 +248,7 @@ export class PlacesService {
     // you need to go Firebase Console > Functions.
     // There you'll see a uploaded function there and an URL is generated for you.
     // Get that function and paste it here.
-    return this.httpClient.post<{imageUrl: string, imagePath: string}>(
+    return this.httpClient.post<{ imageUrl: string; imagePath: string }>(
       "https://us-central1-ionic-angular-course-e937d.cloudfunctions.net/storeImage",
       uploadData
     );

@@ -14,7 +14,8 @@ import { PlacesService } from "../../places.service";
 import { Subscription } from "rxjs";
 import { BookingsService } from "src/app/bookings/bookings.service";
 import { AuthService } from "src/app/auth/auth.service";
-import { MapModalComponent } from 'src/app/shared/map-modal/map-modal.component';
+import { MapModalComponent } from "src/app/shared/map-modal/map-modal.component";
+import { take, switchMap } from "rxjs/operators";
 
 @Component({
   selector: "app-place-detail",
@@ -53,15 +54,23 @@ export class PlaceDetailPage implements OnInit {
         return;
       }
       this.isLoading = true;
-      // Commented to use RxJS
-      // this.place = this.placeService.getPlace(paramMap.get("placeId"));
-      this.placesSub = this.placeService
-        .getPlace(paramMap.get("placeId"))
+      let fetchedUserId: string;
+      this.authService.userId
+        .pipe(
+          take(1),
+          switchMap((userId) => {
+            if (!userId) {
+              throw new Error("Found no user!");
+            }
+            fetchedUserId = userId;
+            return this.placeService.getPlace(paramMap.get("placeId"));
+          })
+        )
         .subscribe(
           (place) => {
             this.isLoading = false;
             this.place = place;
-            this.isBookable = place.userId !== this.authService.userId; // Only allow the Booking button if the place is not created by me.
+            this.isBookable = place.userId !== fetchedUserId; // Only allow the Booking button if the place is not created by me.
           },
           async (error) => {
             const alertEl = await this.alertController.create({
@@ -98,9 +107,9 @@ export class PlaceDetailPage implements OnInit {
           lng: this.place.location.lng,
         },
         selectable: false,
-        closeButtonText: 'Close',
-        title: this.place.location.address
-      }
+        closeButtonText: "Close",
+        title: this.place.location.address,
+      },
     });
     await modalEl.present();
   }

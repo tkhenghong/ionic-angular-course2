@@ -1,12 +1,11 @@
 import { Injectable } from "@angular/core";
-import { CanLoad, Router, CanActivate } from "@angular/router";
-import { Observable } from "rxjs";
+import { Router, CanActivate, ActivatedRouteSnapshot } from "@angular/router";
 import { AuthService } from "./auth.service";
 
 // Build a guard to prevent other users access to places and bookings pages
 // Attach this guard into app.routing.module.ts file. Go see that file.
 @Injectable({
-  providedIn: "root"
+  providedIn: "root",
 })
 export class AuthGuard implements CanActivate {
   // In Ionic 4, this canActivate method that automatically be generated.
@@ -48,13 +47,13 @@ export class AuthGuard implements CanActivate {
   // }
 
   // https://medium.com/@ryanchenkie_40935/angular-authentication-using-route-guards-bf7a4ca13ae3
+  // Latest Auth guard with Observable: https://www.freakyjolly.com/angular-7-6-use-auth-guards-canactivate-and-resolve-in-angular-routing-quick-example/
   canActivate(): boolean {
-    if (!this.authService.userIsAuthenticated) {
-      // Redirects the user to the login page.
+    console.log("guard!");
+    if (!this.authService.isUserAuthenticated()) {
       this.router.navigateByUrl("/auth");
       return false;
     }
-
     // Block the navigation
     return true;
   }
