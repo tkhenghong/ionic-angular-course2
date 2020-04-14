@@ -1,9 +1,10 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { environment } from "src/environments/environment";
-import { BehaviorSubject } from "rxjs";
+import { BehaviorSubject, from } from "rxjs";
 import { User } from "./user.model";
 import { map, tap } from "rxjs/operators";
+import { Capacitor, Plugins } from "@capacitor/core";
 
 export interface AuthResponseData {
   idToken: string;
@@ -12,6 +13,13 @@ export interface AuthResponseData {
   expiresIn: string; // Tells you expiration time.
   localId: string; // Firebase auto assigns ID in for every signed up user.
   registered?: boolean; // This is a property when used in Login. Determine whether this user is a registered user or not.
+}
+
+export interface AuthStorageToken {
+  token: string;
+  userId: string;
+  tokenExpirationDate: string;
+  email: string;
 }
 
 @Injectable({
@@ -81,6 +89,13 @@ export class AuthService {
         expirationTime
       )
     );
+
+    this.storeAuthData(
+      userData.localId,
+      userData.idToken,
+      expirationTime.toISOString(),
+      userData.email
+    );
   }
 
   // Learn how to use Google Auth REST API easily. https://firebase.google.com/docs/reference/rest/auth#section-create-email-password
@@ -94,5 +109,60 @@ export class AuthService {
         returnSecureToken: true,
       })
       .pipe(tap(this.setUserData.bind(this))); // bind(this) is used to only limit the subscribe scope to this class only.
+  }
+
+  // Using Capacitor Storage to store data (Like using localStorage)
+  private storeAuthData(
+    userId: string,
+    token: string,
+    tokenExpirationDate: string,
+    email: string
+  ) {
+    const authStorageToken: AuthStorageToken = {
+      userId,
+      token,
+      tokenExpirationDate,
+      email,
+    };
+    const data: string = JSON.stringify(authStorageToken);
+    Plugins.Storage.set({ key: "authData", value: data });
+  }
+
+  // This will try to fetch data from Capacitor Storage and see the token expired or not
+  autoLogin() {
+    // Convert Promise to Observable***
+    return from(Plugins.Storage.get({ key: "authData" })).pipe(
+      map((storedData) => {
+        if (!storedData || !storedData.value) {
+          return null;
+        }
+
+        const parsedData = JSON.parse(storedData.value) as AuthStorageToken;
+
+        const expirationTime = new Date(parsedData.tokenExpirationDate);
+        if (expirationTime <= new Date()) {
+          // If token expired
+          return null;
+        }
+
+        const user = new User(
+          parsedData.userId,
+          parsedData.email,
+          parsedData.token,
+          expirationTime
+        );
+        return user;
+      }),
+      tap(user => {
+        if(user) {
+          // Set the user
+          this._user.next(user);
+        }
+      }),
+      map(user => {
+        // convert object to boolean
+        return !!user;
+      })
+    );
   }
 }
