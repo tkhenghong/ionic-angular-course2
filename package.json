@@ -1,8 +1,8 @@
 {
-  "name": "ionic-angular-course3",
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
+  "name": "PairBnB",
+  "version": "1.0.0",
+  "author": "GHOST Dev",
+  "homepage": "https://github.com/tkhenghong/ionic-angular-course2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
