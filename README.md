@@ -29,3 +29,7 @@ service firebase.storage {
     }
   }
 }
+
+Change to Custom App Icons for iOS and Android:
+
+https://medium.com/@dalezak/generate-app-icon-and-splash-screen-images-for-ionic-framework-using-capacitor-e1f8c6ef0fd4

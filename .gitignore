@@ -34,6 +34,7 @@ npm-debug.log*
 /.gradle
 /android
 /ios
-/resources
+/resources/android
+/resources/ios
 
 config.xml
