@@ -13,6 +13,7 @@ import { HttpClientModule } from "@angular/common/http";
 import { AgmCoreModule } from '@agm/core';
 
 import { environment } from '../environments/environment';
+import { ServiceWorkerModule } from '@angular/service-worker';
 
 @NgModule({
   declarations: [AppComponent],
@@ -32,7 +33,8 @@ import { environment } from '../environments/environment';
     AppRoutingModule,
     AgmCoreModule.forRoot({
       apiKey: environment.googleMapAPIKey,
-    })
+    }),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
   ],
   providers: [
     StatusBar,

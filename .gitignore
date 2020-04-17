@@ -29,6 +29,7 @@ npm-debug.log*
 /platforms
 /plugins
 /www
+/.firebase
 
 # Self defined useless entry (To not confuse anyone what is auto generated
 /.gradle
