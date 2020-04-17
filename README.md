@@ -35,5 +35,5 @@ Change to Custom App Icons for iOS and Android:
 https://medium.com/@dalezak/generate-app-icon-and-splash-screen-images-for-ionic-framework-using-capacitor-e1f8c6ef0fd4
 
 Some Privacy Policy:
-The developer have built this app based on what the instructor used, and the whole login and sign up is provided by Google solution.
-Everything from upload/view images, get user location, data of new offers and bookings, sign up & login authorizations are using Google services. No user data is personally collected from the developer for doing any purposes. Only the bookings and places and the users have created can be seen by other users as intended and the app is made for demonstration purposes. No users are able to spoof/gather any sensitive data such as username(Email) and password from any other user.
+The developer has built this app based on what the instructor used, and the whole login and sign up is provided by Google solution. Everything from upload/view images, get user location, data of new offers and bookings, sign up & login authorizations are using Google services. No user data is personally collected from the developer for doing any purposes. Only the bookings and places and the users have created can be seen by other users as intended, and the app is made for demonstration purposes. No users are able to spoof/gather any sensitive data such as a username(Email) and password from any other user.
+
